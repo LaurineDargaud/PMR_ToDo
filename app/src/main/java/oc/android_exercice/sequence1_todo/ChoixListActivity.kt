@@ -104,8 +104,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         startActivity(intentVersShowListActivity)
     }
 
-    fun updateJSON(a_list:MutableList<ProfilListeToDo>){
-        updatedData = Gson().toJson(a_list)
+    fun updateJSON(){
+        updatedData = Gson().toJson(profilsList)
         Log.d("ChoixListActivity", "New data: ${updatedData}")
 
         sp_editor?.putString("dataJSON", updatedData)
