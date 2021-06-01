@@ -1,6 +1,13 @@
 package oc.android_exercice.sequence1_todo
 
-class ListeToDo(var titreListeToDo: String = "Nouvelle Liste", var items: MutableList<ItemToDo> = mutableListOf<ItemToDo>()){
+import com.google.gson.annotations.SerializedName
+
+class ListeToDo(
+        @SerializedName("nom_liste")
+        var titreListeToDo: String = "Nouvelle Liste",
+        @SerializedName("items")
+        var items: MutableList<ItemToDo> = mutableListOf<ItemToDo>()
+    ){
     override fun toString(): String {
         return "titreListeToDo='$titreListeToDo'"
     }

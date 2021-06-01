@@ -5,28 +5,53 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 
 class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
     private lateinit var listAdapter : ListAdapter
     private var listes = ListeToDo()
+    private lateinit var profil: ProfilListeToDo
 
     var sp: SharedPreferences? = null;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
 
-        listAdapter = ListAdapter(mutableListOf())
+        //On récupère pseudo de l'user via le bundle de l'intent
+        var bundlePseudo = this.intent.extras
+        var pseudo= bundlePseudo?.getString("pseudo")
+        Log.d("ChoixListActivity", "$pseudo")
+
+        // on dé-sérialise les profils depuis les shared preferences
+        sp = PreferenceManager.getDefaultSharedPreferences(this)
+        val data: String? = sp?.getString("dataJSON", "{}")
+        Log.d("ChoixListActivity", "$data")
+        val listOfProfilsToDo: Type = object : TypeToken<ArrayList<ProfilListeToDo?>?>() {}.type
+        val profilsList: List<ProfilListeToDo> = Gson().fromJson(data, listOfProfilsToDo)
+        Log.d("ChoixListActivity", "Les profils: ${profilsList}")
+
+        // on recherche le profil dans la liste des profils
+        profil = ProfilListeToDo("$pseudo")
+        for (unProfil in profilsList){
+            if (unProfil.login == pseudo){
+                profil = unProfil
+                Log.d("ChoixListActivity", "Profil existant : $profil")
+            }
+        }
+
+        // Affiche la liste des listes de l’utilisateur concerné en RecycleView
+
+        listAdapter = ListAdapter(profil.listes)
 
         var rvListes : RecyclerView = findViewById(R.id.rvListes)
         rvListes.adapter=listAdapter
@@ -43,32 +68,17 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
             }
         }
 
-        //implémetentation de la méthode OnListClick
+        // Implémetentation de la méthode OnListClick
         @Override
         fun onListClick(position : Int) {
             var intentVersShowListActivity : Intent = Intent(this, ChoixListActivity::class.java)
             intentVersShowListActivity.putExtra("selected_list", listes.items[position].toString())
             startActivity(intent)
         }
-
-
-        //On récupère pseudo de l'user via le bundle de l'intent
-        var bundlePseudo = this.intent.extras
-        var pseudo= bundlePseudo?.getString("pseudo")
-
-        // on récupère les shared preferences
-        sp = PreferenceManager.getDefaultSharedPreferences(this)
-
-        // Affiche la liste des listes de l’utilisateur dont le pseudo a été saisi
-
-
-        // on génère l'objet ProfileListeToDo de l'utilisateur
-
     }
 
     override fun onItemClicked(position: Int) {
         Log.d("MainActivity", "onItemClicked $position")
         Toast.makeText(this,position, Toast.LENGTH_LONG).show()
     }
-
 }

@@ -13,8 +13,7 @@
             android:key="dataJSON"
             android:title="Les DATA JSON"
             android:defaultValue="
-{
-   'profils':[
+   [
       {
          'login':'Laurine',
          'listes':[
@@ -24,17 +23,17 @@
                 'items':[
                     {
                         'id_item':'0',
-                        'description:'Un item 1',
+                        'description':'Un item 1',
                         'fait':'0'
                     },
                     {
                         'id_item':'1',
-                        'description:'Un item 2',
+                        'description':'Un item 2',
                         'fait':'1'
                     },
                     {
                         'id_item':'2',
-                        'description:'Un item 3',
+                        'description':'Un item 3',
                         'fait':'0'
                     }
                 ]
@@ -47,10 +46,9 @@
          ]
       },
       {
-         'prenom':'Pierre',
+         'login':'Pierre',
          'listes':[]
       }
-   ]
-}" />
+   ]" />
     </PreferenceCategory>
 </PreferenceScreen>
