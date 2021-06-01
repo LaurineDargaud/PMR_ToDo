@@ -65,7 +65,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         // on affiche la liste des listes de l’utilisateur concerné en RecycleView
 
-        listAdapter = ListAdapter(profil.listes)
+        listAdapter = ListAdapter(this, profil.listes)
 
         var rvListes : RecyclerView = findViewById(R.id.rvListes)
         rvListes.adapter=listAdapter
@@ -93,8 +93,12 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     }
 
     override fun onItemClicked(position: Int) {
-        Log.d("MainActivity", "onItemClicked $position")
-        Toast.makeText(this,position, Toast.LENGTH_LONG).show()
+        // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant la position en Intent
+        Log.d("MainActivity", "Clic sur l'item position $position")
+        val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java).apply {
+            putExtra("position_item", position)
+        }
+        startActivity(intentVersShowListActivity)
     }
 
     fun updateJSON(a_list:MutableList<ProfilListeToDo>){

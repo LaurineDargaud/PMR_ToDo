@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ListAdapter(var listes: MutableList<ListeToDo>) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
+class ListAdapter(
+    private val actionListener: ActionListener,
+    var listes: MutableList<ListeToDo>
+) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         Log.d("ListAdapter", "onCreateViewHolder")
@@ -31,13 +34,19 @@ class ListAdapter(var listes: MutableList<ListeToDo>) : RecyclerView.Adapter<Lis
 
     override fun getItemCount(): Int = listes.size
 
-    class ListViewHolder(
-        itemView: View
-    ) : RecyclerView.ViewHolder(itemView)
-
-    //interface OnListListener {
-    //    fun onListClick(position: Int)
-    //}
+    inner class ListViewHolder(
+        listView: View
+    ) : RecyclerView.ViewHolder(listView){
+        init {
+            listView.setOnClickListener {
+                val listPosition = adapterPosition
+                if (listPosition != RecyclerView.NO_POSITION) {
+                    val clickedList = listes[listPosition]
+                    actionListener.onItemClicked(listPosition)
+                }
+            }
+        }
+    }
 
     interface ActionListener {
         fun onItemClicked(position: Int)
