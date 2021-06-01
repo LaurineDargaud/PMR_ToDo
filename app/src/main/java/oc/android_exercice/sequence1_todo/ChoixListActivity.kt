@@ -18,14 +18,14 @@ import java.lang.reflect.Type
 
 class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
-    private lateinit var listAdapter : ListAdapter
+    private lateinit var listAdapter: ListAdapter
     private var listes = ListeToDo()
     private lateinit var profil: ProfilListeToDo
 
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
-    var updatedData : String = "{}"
+    var updatedData: String = "{}"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +36,12 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         // on récupère pseudo de l'user via le bundle de l'intent
         var bundlePseudo = this.intent.extras
-        var pseudo= bundlePseudo?.getString("pseudo")
+        var pseudo = bundlePseudo?.getString("pseudo")
         Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
 
         // on dé-sérialise les profils depuis les shared preferences
         sp = PreferenceManager.getDefaultSharedPreferences(this)
-        val data: String? = sp?.getString("dataJSON", "{}")
+        val data: String? = sp?.getString("dataJSON", "[]")
         Log.d("ChoixListActivity", "Data recuperees depuis SP = $data")
         val listOfProfilsToDo: Type = object : TypeToken<MutableList<ProfilListeToDo?>?>() {}.type
         val profilsList: MutableList<ProfilListeToDo> = Gson().fromJson(data, listOfProfilsToDo)
@@ -49,16 +49,16 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         // on recherche le profil dans la liste des profils
         profil = ProfilListeToDo("$pseudo")
-        var isNewProfil : Boolean = true
-        for (unProfil in profilsList){
-            if (unProfil.login == pseudo){
+        var isNewProfil: Boolean = true
+        for (unProfil in profilsList) {
+            if (unProfil.login == pseudo) {
                 profil = unProfil
                 isNewProfil = false
                 Log.d("ChoixListActivity", "Profil existant : $profil")
             }
         }
         // dans le cas d'un nouveau profil, on update le JSON dans shared preferences
-        if (isNewProfil){
+        if (isNewProfil) {
             profilsList.add(profil)
             updateJSON(profilsList)
         }
@@ -67,15 +67,15 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         listAdapter = ListAdapter(this, profil.listes)
 
-        var rvListes : RecyclerView = findViewById(R.id.rvListes)
-        rvListes.adapter=listAdapter
-        rvListes.layoutManager=LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        var rvListes: RecyclerView = findViewById(R.id.rvListes)
+        rvListes.adapter = listAdapter
+        rvListes.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        var btnAddList : Button = findViewById(R.id.buttonAddList)
+        var btnAddList: Button = findViewById(R.id.buttonAddList)
         btnAddList.setOnClickListener {
-            val etTitre : EditText = findViewById(R.id.editTextNewList)
+            val etTitre: EditText = findViewById(R.id.editTextNewList)
             val titre = etTitre.text.toString()
-            if (titre.isNotEmpty()){
+            if (titre.isNotEmpty()) {
                 val liste = ListeToDo(titre)
                 profil.ajouteListe(liste)
                 updateJSON(profilsList)
@@ -85,8 +85,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         // Implémentation de la méthode OnListClick
         @Override
-        fun onListClick(position : Int) {
-            var intentVersShowListActivity : Intent = Intent(this, ChoixListActivity::class.java)
+        fun onListClick(position: Int) {
+            var intentVersShowListActivity: Intent = Intent(this, ChoixListActivity::class.java)
             intentVersShowListActivity.putExtra("selected_list", listes.items[position].toString())
             startActivity(intent)
         }
@@ -101,7 +101,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         startActivity(intentVersShowListActivity)
     }
 
-    fun updateJSON(a_list:MutableList<ProfilListeToDo>){
+    fun updateJSON(a_list: MutableList<ProfilListeToDo>) {
         updatedData = Gson().toJson(a_list)
         Log.d("ChoixListActivity", "New data: ${updatedData}")
 

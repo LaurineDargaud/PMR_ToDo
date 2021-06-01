@@ -19,18 +19,18 @@ class ShowListActivity : AppCompatActivity() {
         itemAdapter = ItemAdapter(mutableListOf<ItemToDo>())
 
         //Initilialisation du recyclerview affichant la liste des items de la todo
-        var rvTodoList : RecyclerView =findViewById(R.id.rvTodoList)
-        rvTodoList.adapter= itemAdapter
+        var rvTodoList: RecyclerView = findViewById(R.id.rvTodoList)
+        rvTodoList.adapter = itemAdapter
         rvTodoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         //Implémentation de l'ajout d'un item à la todo
-        var btnAddToDoItem : Button = findViewById(R.id.buttonAddToDoItem)
+        var btnAddToDoItem: Button = findViewById(R.id.buttonAddToDoItem)
 
         //Pb: Ne permet d'ajouter qu'une tâche
         btnAddToDoItem.setOnClickListener {
-            var toDoDescription : EditText  = findViewById(R.id.editTextAddToDoItem)
-            var toDoTitle : String = toDoDescription.text.toString()
-            if(toDoTitle.isNotEmpty()){
+            var toDoDescription: EditText = findViewById(R.id.editTextAddToDoItem)
+            var toDoTitle: String = toDoDescription.text.toString()
+            if (toDoTitle.isNotEmpty()) {
                 var item = ItemToDo(toDoTitle)
                 itemAdapter.addTodo(item)
                 toDoDescription.text.clear()
@@ -38,5 +38,5 @@ class ShowListActivity : AppCompatActivity() {
         }
 
 
-}
+    }
 }

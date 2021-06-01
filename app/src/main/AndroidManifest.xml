@@ -9,8 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sequence1_ToDo">
-        <activity android:name=".ChoixListActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".ChoixListActivity"
+            android:label="ChoixListActivity"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,7 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".ShowListActivity" />
+        <activity
+            android:name=".ShowListActivity"
+            android:label="ShowListActivity"/>
     </application>
 
 </manifest>

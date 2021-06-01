@@ -30,18 +30,18 @@ class ItemAdapter(var items: MutableList<ItemToDo>) : RecyclerView.Adapter<ItemA
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         Log.d("ItemAdapter", "onBindViewHolder position $position")
-        val currentItem= items[position]
+        val currentItem = items[position]
         holder.itemView.apply {
-            val textViewItem : TextView = findViewById(R.id.textViewItem)
-            val checkBoxItem : CheckBox = findViewById(R.id.checkBoxItem)
-                textViewItem.text = currentItem.description
-                checkBoxItem.isChecked = currentItem.fait
-            }
+            val textViewItem: TextView = findViewById(R.id.textViewItem)
+            val checkBoxItem: CheckBox = findViewById(R.id.checkBoxItem)
+            textViewItem.text = currentItem.description
+            checkBoxItem.isChecked = currentItem.fait
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
     class ItemViewHolder(
-        itemView: View
+            itemView: View
     ) : RecyclerView.ViewHolder(itemView)
 }

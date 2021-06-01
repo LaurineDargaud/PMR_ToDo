@@ -24,9 +24,9 @@ class SettingsActivity : PreferenceActivity(), OnPreferenceChangeListener {
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         val t = Toast.makeText(
-            this,
-            "click cb :" + newValue.toString()
-                    + " pref manipulée : " + preference.key, Toast.LENGTH_SHORT
+                this,
+                "click cb :" + newValue.toString()
+                        + " pref manipulée : " + preference.key, Toast.LENGTH_SHORT
         )
         t.show()
 

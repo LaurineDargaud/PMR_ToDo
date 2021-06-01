@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         sp_editor = sp?.edit()
         //Récupération des éléments graphiques du layout de l'activité dans le code
         buttonOK = findViewById(R.id.buttonOK)
-        pseudo= findViewById(R.id.editTextPseudo)
+        pseudo = findViewById(R.id.editTextPseudo)
 
         //Appel à la méthode gérant les clicks sur le buttonOK
         onClickFun()
@@ -50,8 +50,8 @@ class MainActivity : AppCompatActivity() {
             //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
             val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
                 putExtra("pseudo", nom)
-        }
-           startActivity(intentVersChoixListActivity)
+            }
+            startActivity(intentVersChoixListActivity)
 
         }
     }
