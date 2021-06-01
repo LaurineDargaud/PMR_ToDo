@@ -22,6 +22,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     private var listes = ListeToDo()
     private lateinit var profil: ProfilListeToDo
 
+    private lateinit var profilsList : MutableList<ProfilListeToDo>
+
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
@@ -40,11 +42,10 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
 
         // on dé-sérialise les profils depuis les shared preferences
-        sp = PreferenceManager.getDefaultSharedPreferences(this)
-        val data: String? = sp?.getString("dataJSON", "[]")
+        val data: String? = sp?.getString("dataJSON","[]")
         Log.d("ChoixListActivity", "Data recuperees depuis SP = $data")
         val listOfProfilsToDo: Type = object : TypeToken<MutableList<ProfilListeToDo?>?>() {}.type
-        val profilsList: MutableList<ProfilListeToDo> = Gson().fromJson(data, listOfProfilsToDo)
+        profilsList = Gson().fromJson(data, listOfProfilsToDo)
         Log.d("ChoixListActivity", "Les profils: ${profilsList}")
 
         // on recherche le profil dans la liste des profils
@@ -60,7 +61,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         // dans le cas d'un nouveau profil, on update le JSON dans shared preferences
         if (isNewProfil) {
             profilsList.add(profil)
-            updateJSON(profilsList)
+            updateJSON()
         }
 
         // on affiche la liste des listes de l’utilisateur concerné en RecycleView
@@ -78,7 +79,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
             if (titre.isNotEmpty()) {
                 val liste = ListeToDo(titre)
                 profil.ajouteListe(liste)
-                updateJSON(profilsList)
+                updateJSON()
                 etTitre.text.clear()
             }
         }
@@ -94,14 +95,16 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant la position en Intent
-        Log.d("MainActivity", "Clic sur l'item position $position")
-        val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java).apply {
+        Log.d("ChoixListActivity", "Clic sur l'item position $position")
+        val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
+                .apply {
             putExtra("position_item", position)
         }
+        intentVersShowListActivity.putExtra("profil",profil.login)
         startActivity(intentVersShowListActivity)
     }
 
-    fun updateJSON(a_list: MutableList<ProfilListeToDo>) {
+    fun updateJSON(a_list:MutableList<ProfilListeToDo>){
         updatedData = Gson().toJson(a_list)
         Log.d("ChoixListActivity", "New data: ${updatedData}")
 

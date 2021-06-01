@@ -16,4 +16,8 @@ class ListeToDo(
         val itemTrouve: ItemToDo? = items.firstOrNull { it.description == descriptionItem }
         return itemTrouve
     }
+
+    fun ajouterItem(descriptionItem: String){
+        items.add(ItemToDo(descriptionItem))
+    }
 }

@@ -9,24 +9,21 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-class ItemAdapter(var items: MutableList<ItemToDo>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(
+        private val actionListener: ActionListener,
+        var items: MutableList<ItemToDo>
+) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         Log.d("ItemAdapter", "onCreateViewHolder")
-        return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false))
+        return ItemViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_layout,
+                        parent,
+                        false
+                )
+        )
     }
-
-    fun addTodo(item: ItemToDo) {
-        items.add(item)
-        notifyItemInserted(items.size - 1)
-    }
-
-    /*fun deleteDoneItems() {
-        items.removeAll { item ->
-            item.fait
-        }
-        notifyDataSetChanged()
-    }*/
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         Log.d("ItemAdapter", "onBindViewHolder position $position")
@@ -41,7 +38,21 @@ class ItemAdapter(var items: MutableList<ItemToDo>) : RecyclerView.Adapter<ItemA
 
     override fun getItemCount(): Int = items.size
 
-    class ItemViewHolder(
+    inner class ItemViewHolder(
             itemView: View
-    ) : RecyclerView.ViewHolder(itemView)
+    ) : RecyclerView.ViewHolder(itemView){
+        init {
+            itemView.setOnClickListener {
+                val itemPosition = adapterPosition
+                if (itemPosition != RecyclerView.NO_POSITION) {
+                    val clickedItem = items[itemPosition]
+                    actionListener.onItemClicked(itemPosition)
+                }
+            }
+        }
+    }
+
+    interface ActionListener {
+        fun onItemClicked(position: Int)
+    }
 }
