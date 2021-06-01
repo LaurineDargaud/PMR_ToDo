@@ -22,34 +22,50 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     private var listes = ListeToDo()
     private lateinit var profil: ProfilListeToDo
 
-    var sp: SharedPreferences? = null;
+    var sp: SharedPreferences? = null
+    private var sp_editor: SharedPreferences.Editor? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
 
-        //On récupère pseudo de l'user via le bundle de l'intent
+        sp = PreferenceManager.getDefaultSharedPreferences(this)
+        sp_editor = sp?.edit()
+
+        // on récupère pseudo de l'user via le bundle de l'intent
         var bundlePseudo = this.intent.extras
         var pseudo= bundlePseudo?.getString("pseudo")
-        Log.d("ChoixListActivity", "$pseudo")
+        Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
 
         // on dé-sérialise les profils depuis les shared preferences
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         val data: String? = sp?.getString("dataJSON", "{}")
-        Log.d("ChoixListActivity", "$data")
-        val listOfProfilsToDo: Type = object : TypeToken<ArrayList<ProfilListeToDo?>?>() {}.type
-        val profilsList: List<ProfilListeToDo> = Gson().fromJson(data, listOfProfilsToDo)
+        Log.d("ChoixListActivity", "Data recuperees depuis SP = $data")
+        val listOfProfilsToDo: Type = object : TypeToken<MutableList<ProfilListeToDo?>?>() {}.type
+        val profilsList: MutableList<ProfilListeToDo> = Gson().fromJson(data, listOfProfilsToDo)
         Log.d("ChoixListActivity", "Les profils: ${profilsList}")
 
         // on recherche le profil dans la liste des profils
         profil = ProfilListeToDo("$pseudo")
+        var isNewProfil : Boolean = true
         for (unProfil in profilsList){
             if (unProfil.login == pseudo){
                 profil = unProfil
+                isNewProfil = false
                 Log.d("ChoixListActivity", "Profil existant : $profil")
             }
         }
+        // dans le cas d'un nouveau profil, on update le JSON dans shared preferences
+        if (isNewProfil){
+            profilsList.add(profil)
+            val updatedData : String = Gson().toJson(profilsList)
+            Log.d("ChoixListActivity", "New data: ${updatedData}")
 
-        // Affiche la liste des listes de l’utilisateur concerné en RecycleView
+            sp_editor?.putString("dataJSON", updatedData)
+            sp_editor?.commit()
+        }
+
+        // on affiche la liste des listes de l’utilisateur concerné en RecycleView
 
         listAdapter = ListAdapter(profil.listes)
 
@@ -68,7 +84,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
             }
         }
 
-        // Implémetentation de la méthode OnListClick
+        // Implémentation de la méthode OnListClick
         @Override
         fun onListClick(position : Int) {
             var intentVersShowListActivity : Intent = Intent(this, ChoixListActivity::class.java)

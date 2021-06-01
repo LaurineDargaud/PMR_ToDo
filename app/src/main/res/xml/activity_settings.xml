@@ -40,7 +40,7 @@
              },
              {
                 'id_liste':'1',
-                'titre_liste':'Ma seconde liste',
+                'nom_liste':'Ma seconde liste',
                 'items':[]
              }
          ]
