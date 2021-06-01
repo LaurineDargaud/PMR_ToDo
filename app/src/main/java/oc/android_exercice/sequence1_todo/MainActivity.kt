@@ -13,9 +13,9 @@ import androidx.core.content.ContextCompat.startActivity
 
 class MainActivity : AppCompatActivity() {
     //Initialisation des variables
-    private var buttonOK: Button? = null;
-    private var pseudo: EditText? = null;
-    var sp: SharedPreferences? = null;
+    private var buttonOK: Button? = null
+    private var pseudo: EditText? = null
+    var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val s: String? = sp?.getString("pseudo", "login inconnu")
         pseudo?.setText(s)
+
     }
 
     private fun onClickFun() {
@@ -43,11 +44,8 @@ class MainActivity : AppCompatActivity() {
             val nom: String = pseudo?.text.toString()
 
             // Stockage du pseudo pour une prochaine connexion
-            //var sp_editor: SharedPreferences.Editor? = sp?.edit()
-            if (sp_editor != null) {
-                sp_editor!!.putString("pseudo", nom)
-                sp_editor!!.commit()
-            }
+            sp_editor?.putString("login", nom)
+            sp_editor?.commit()
 
             //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
             val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
