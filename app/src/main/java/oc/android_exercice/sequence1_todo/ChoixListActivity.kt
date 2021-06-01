@@ -4,18 +4,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import oc.android_exercice.sequence1_todo.utils.ItemClickSupport
 
 
 
 
-class ChoixListActivity : AppCompatActivity(), ListAdapter.OnListListener {
+class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
     private lateinit var listAdapter : ListAdapter
     private var listes = ListeToDo()
@@ -63,10 +64,11 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.OnListListener {
 
         // on génère l'objet ProfileListeToDo de l'utilisateur
 
+    }
 
-
-
-
+    override fun onItemClicked(position: Int) {
+        Log.d("MainActivity", "onItemClicked $position")
+        Toast.makeText(this,position, Toast.LENGTH_LONG).show()
     }
 
 }

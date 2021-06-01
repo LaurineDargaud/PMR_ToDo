@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val s: String? = sp?.getString("pseudo", "login inconnu")
         pseudo?.setText(s)
+
     }
 
     private fun onClickFun() {

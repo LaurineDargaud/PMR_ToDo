@@ -47,7 +47,11 @@ class ListAdapter(var listes: MutableList<ListeToDo>) : RecyclerView.Adapter<Lis
         itemView: View
     ) : RecyclerView.ViewHolder(itemView)
 
-    interface OnListListener {
-        fun onListClick(position: Int)
+    //interface OnListListener {
+    //    fun onListClick(position: Int)
+    //}
+
+    interface ActionListener {
+        fun onItemClicked(position: Int)
     }
 }

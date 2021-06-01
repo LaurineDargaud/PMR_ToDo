@@ -9,5 +9,48 @@
             android:summary="Votre dernier login"
             android:key="login"
             android:title="Login" />
+        <EditTextPreference
+            android:key="dataJSON"
+            android:title="Les DATA JSON"
+            android:defaultValue="
+{
+   'profils':[
+      {
+         'login':'Laurine',
+         'listes':[
+            {
+                'id_liste':'0',
+                'nom_liste':'Ma premiere liste',
+                'items':[
+                    {
+                        'id_item':'0',
+                        'description:'Un item 1',
+                        'fait':'0'
+                    },
+                    {
+                        'id_item':'1',
+                        'description:'Un item 2',
+                        'fait':'1'
+                    },
+                    {
+                        'id_item':'2',
+                        'description:'Un item 3',
+                        'fait':'0'
+                    }
+                ]
+             },
+             {
+                'id_liste':'1',
+                'titre_liste':'Ma seconde liste',
+                'items':[]
+             }
+         ]
+      },
+      {
+         'prenom':'Pierre',
+         'listes':[]
+      }
+   ]
+}" />
     </PreferenceCategory>
 </PreferenceScreen>

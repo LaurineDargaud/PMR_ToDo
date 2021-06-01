@@ -9,5 +9,4 @@ class ListeToDo(var titreListeToDo: String = "Nouvelle Liste", var items: Mutabl
         val itemTrouve: ItemToDo? = items.firstOrNull{ it.description == descriptionItem}
         return itemTrouve
     }
-    }
 }
