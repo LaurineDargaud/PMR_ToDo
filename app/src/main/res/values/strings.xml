@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">Sequence1_ToDo</string>
+    <string name="data_init_test">
+   [
+      {
+         "login":"Laurine",
+         "listes":[
+            {
+                "nom_liste":"Ma premiere liste",
+                "items":[
+                    {
+                        "description":"Un item 1",
+                        "fait":"0"
+                    },
+                    {
+                        "description":"Un item 2",
+                        "fait":"1"
+                    },
+                    {
+                        "description":"Un item 3",
+                        "fait":"0"
+                    }
+                ]
+             },
+             {
+                "nom_liste":"Ma seconde liste",
+                "items":[]
+             }
+         ]
+      },
+      {
+         "login":"Pierre",
+         "listes":[]
+      }
+   ]
+    </string>
 </resources>
