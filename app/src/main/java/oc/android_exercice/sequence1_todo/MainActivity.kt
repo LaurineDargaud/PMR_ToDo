@@ -9,10 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import androidx.core.content.ContextCompat.startActivity
 
 class MainActivity : AppCompatActivity() {
     //Initialisation des variables
-    private val PSEUDO: String = "Laurine et Pierre"
     private var buttonOK: Button? = null;
     private var pseudo: EditText? = null;
     var sp: SharedPreferences? = null;
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val s: String? = sp?.getString("PSEUDO", "login inconnu")
+        val s: String? = sp?.getString("pseudo", "login inconnu")
         pseudo?.setText(s)
     }
 
@@ -45,19 +45,19 @@ class MainActivity : AppCompatActivity() {
             // Stockage du pseudo pour une prochaine connexion
             //var sp_editor: SharedPreferences.Editor? = sp?.edit()
             if (sp_editor != null) {
-                sp_editor!!.putString("PSEUDO", nom)
+                sp_editor!!.putString("pseudo", nom)
                 sp_editor!!.commit()
-                // feature à tester
-                //SettingsActivity().edtPref.text=nom
             }
 
-            // Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
+            //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
             val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
-                putExtra(PSEUDO, nom)
-            }
-            startActivity(intentVersChoixListActivity)
+                putExtra("pseudo", nom)
+        }
+           startActivity(intentVersChoixListActivity)
+
         }
     }
+
 
     // affiche le menu ActionBar si la méthode renvoie vrai
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -79,3 +79,4 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 }
+

@@ -31,7 +31,7 @@ class SettingsActivity : PreferenceActivity(), OnPreferenceChangeListener {
         t.show()
 
         var sp_editor: SharedPreferences.Editor? = sp?.edit()
-        sp_editor?.putString("PSEUDO", newValue.toString())
+        sp_editor?.putString("pseudo", newValue.toString())
         sp_editor?.commit()
 
         return true
