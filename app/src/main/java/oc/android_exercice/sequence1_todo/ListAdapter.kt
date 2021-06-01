@@ -20,18 +20,6 @@ class ListAdapter(var listes: MutableList<ListeToDo>) : RecyclerView.Adapter<Lis
         )
     }
 
-    fun addList(list: ListeToDo) {
-        listes.add(list)
-        notifyItemInserted(listes.size - 1)
-    }
-
-    /*fun deleteDoneItems() {
-        items.removeAll { item ->
-            item.fait
-        }
-        notifyDataSetChanged()
-    }*/
-
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         Log.d("ListAdapter", "onBindViewHolder position $position")
         val currentItem= listes[position]

@@ -25,6 +25,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
+    var updatedData : String = "{}"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
@@ -58,11 +60,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         // dans le cas d'un nouveau profil, on update le JSON dans shared preferences
         if (isNewProfil){
             profilsList.add(profil)
-            val updatedData : String = Gson().toJson(profilsList)
-            Log.d("ChoixListActivity", "New data: ${updatedData}")
-
-            sp_editor?.putString("dataJSON", updatedData)
-            sp_editor?.commit()
+            updateJSON(profilsList)
         }
 
         // on affiche la liste des listes de l’utilisateur concerné en RecycleView
@@ -79,7 +77,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
             val titre = etTitre.text.toString()
             if (titre.isNotEmpty()){
                 val liste = ListeToDo(titre)
-                listAdapter.addList(liste)
+                profil.ajouteListe(liste)
+                updateJSON(profilsList)
                 etTitre.text.clear()
             }
         }
@@ -96,5 +95,13 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     override fun onItemClicked(position: Int) {
         Log.d("MainActivity", "onItemClicked $position")
         Toast.makeText(this,position, Toast.LENGTH_LONG).show()
+    }
+
+    fun updateJSON(a_list:MutableList<ProfilListeToDo>){
+        updatedData = Gson().toJson(a_list)
+        Log.d("ChoixListActivity", "New data: ${updatedData}")
+
+        sp_editor?.putString("dataJSON", updatedData)
+        sp_editor?.commit()
     }
 }
