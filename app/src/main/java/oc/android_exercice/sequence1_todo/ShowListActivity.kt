@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +65,6 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
         // on affiche les items de la liste rendue
 
         itemAdapter = ItemAdapter(this, selected_list.items)
-        // itemAdapter = ItemAdapter(this, mutableListOf<ItemToDo>())
 
         //Initilialisation du recyclerview affichant la liste des items de la todo
         var rvTodoList: RecyclerView = findViewById(R.id.rvTodoList)
@@ -80,7 +80,6 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             if(toDoTitle.isNotEmpty()){
                 // ajout de l'item dans la liste
                 selected_list.ajouterItem(toDoTitle)
-
                 updateJSON()
                 toDoDescription.text.clear()
             }
@@ -90,6 +89,8 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on change le "fait"
         Log.d("ShowListActivity", "Clic sur l'item position $position")
+        selected_list.items.get(position).changeFait()
+        updateJSON()
     }
 
     fun updateJSON(){

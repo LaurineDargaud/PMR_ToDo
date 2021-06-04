@@ -42,12 +42,23 @@ class ItemAdapter(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView){
         init {
-            itemView.setOnClickListener {
+            val checkBoxItem = itemView.findViewById<CheckBox>(R.id.checkBoxItem)
+
+            fun changerItem(){
                 val itemPosition = adapterPosition
                 if (itemPosition != RecyclerView.NO_POSITION) {
-                    val clickedItem = items[itemPosition]
                     actionListener.onItemClicked(itemPosition)
                 }
+            }
+
+            checkBoxItem.setOnClickListener{
+                changerItem()
+            }
+
+            itemView.setOnClickListener {
+                // on change l'affichage de la cb
+                checkBoxItem.isChecked = (!checkBoxItem.isChecked)
+                changerItem()
             }
         }
     }
