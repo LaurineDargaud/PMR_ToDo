@@ -83,14 +83,6 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                 etTitre.text.clear()
             }
         }
-
-        // Implémentation de la méthode OnListClick
-        @Override
-        fun onListClick(position: Int) {
-            var intentVersShowListActivity: Intent = Intent(this, ChoixListActivity::class.java)
-            intentVersShowListActivity.putExtra("selected_list", listes.items[position].toString())
-            startActivity(intent)
-        }
     }
 
     override fun onItemClicked(position: Int) {
@@ -98,9 +90,11 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         Log.d("ChoixListActivity", "Clic sur l'item position $position")
         val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
                 .apply {
-            putExtra("position_item", position)
-        }
-        intentVersShowListActivity.putExtra("profil",profil.login)
+                    putExtra("position", position.toString())
+                }
+        // intentVersShowListActivity.putExtra("position",position.toString())
+        // intentVersShowListActivity.putExtra("pseudo",profil.login)
+        Log.d("ChoixListActivity", "${intentVersShowListActivity}")
         startActivity(intentVersShowListActivity)
     }
 

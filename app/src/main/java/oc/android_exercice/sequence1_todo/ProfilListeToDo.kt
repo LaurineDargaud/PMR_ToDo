@@ -1,5 +1,6 @@
 package oc.android_exercice.sequence1_todo
 
+import android.util.Log
 import com.google.gson.annotations.SerializedName
 
 class ProfilListeToDo(
@@ -10,6 +11,7 @@ class ProfilListeToDo(
 ) {
     fun ajouteListe(uneListe: ListeToDo) {
         listes.add(uneListe)
+        Log.d("ProfilListToDo","Ajout liste ${uneListe.titreListeToDo}")
     }
 
     override fun toString(): String {

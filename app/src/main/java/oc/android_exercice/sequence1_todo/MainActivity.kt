@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val s: String? = sp?.getString("pseudo", "login inconnu")
+        val s: String? = sp?.getString("login", "login inconnu")
         pseudo?.setText(s)
 
     }

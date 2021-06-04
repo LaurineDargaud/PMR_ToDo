@@ -23,7 +23,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
     private lateinit var profilsList : MutableList<ProfilListeToDo>
     private lateinit var profil: ProfilListeToDo
-    private var selected_list: ListeToDo = ListeToDo()
+    private lateinit var selected_list: ListeToDo
 
     var updatedData : String = "{}"
 
@@ -35,11 +35,12 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
         sp_editor = sp?.edit()
 
         // on récupère pseudo et postion de l'user via le bundle de l'intent
-        var bundlePseudo = this.intent.extras
-        var pseudo= bundlePseudo?.getString("pseudo")
-        var position : String? = bundlePseudo?.getString("position")
+        var bundle = this.intent.extras
+        Log.d("ShowListActivity", "Bundle transmis ${bundle}")
+        var pseudo = sp?.getString("login", "")
+        var position : String? = bundle?.getString("position")
         Log.d("ShowListActivity", "Pseudo de l'user = $pseudo")
-        Log.d("ShowListActivity", "Position de la liste = $position")
+        Log.d("ShowListActivity", "Position de la liste = ${position}")
 
         // on dé-sérialise les profils depuis les shared preferences
         val data: String? = sp?.getString("dataJSON","[]")
@@ -62,8 +63,8 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
         // on affiche les items de la liste rendue
 
-        //itemAdapter = ItemAdapter(this, selected_list.items)
-        itemAdapter = ItemAdapter(this, mutableListOf<ItemToDo>())
+        itemAdapter = ItemAdapter(this, selected_list.items)
+        // itemAdapter = ItemAdapter(this, mutableListOf<ItemToDo>())
 
         //Initilialisation du recyclerview affichant la liste des items de la todo
         var rvTodoList: RecyclerView = findViewById(R.id.rvTodoList)
@@ -79,6 +80,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             if(toDoTitle.isNotEmpty()){
                 // ajout de l'item dans la liste
                 selected_list.ajouterItem(toDoTitle)
+
                 updateJSON()
                 toDoDescription.text.clear()
             }
@@ -88,6 +90,14 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on change le "fait"
         Log.d("ShowListActivity", "Clic sur l'item position $position")
+    }
+
+    fun updateJSON(){
+        updatedData = Gson().toJson(profilsList)
+        Log.d("ChoixListActivity", "New data: ${updatedData}")
+
+        sp_editor?.putString("dataJSON", updatedData)
+        sp_editor?.commit()
     }
 
 }
