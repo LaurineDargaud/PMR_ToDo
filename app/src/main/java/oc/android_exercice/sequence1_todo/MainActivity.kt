@@ -8,16 +8,17 @@ import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import kotlinx.coroutines.*
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
-import kotlinx.coroutines.launch
 import oc.android_exercice.sequence1_todo.data.DataProvider.authentificationFromApi
-import kotlinx.coroutines.*
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     //Initialisation des variables
@@ -26,6 +27,12 @@ class MainActivity : AppCompatActivity() {
     private var motDePasse: EditText? = null
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
+
+    private val activityScope = CoroutineScope(
+            SupervisorJob() +
+                    Dispatchers.Main
+    )
+    var job : Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,8 +77,14 @@ class MainActivity : AppCompatActivity() {
 
             //Authentification
             val mdp: String = motDePasse?.text.toString()
+            //authentificationFromApi(nom, mdp)
             activityScope.launch{
-                authentificationFromApi(nom, mdp)
+                try{
+                    val hash  = authentificationFromApi("pl", "pl")
+                    Log.d("MainActivity","hash = $hash")
+                } catch(e:Exception){
+                    // erreur d'authentification
+                }
             }
 
 
