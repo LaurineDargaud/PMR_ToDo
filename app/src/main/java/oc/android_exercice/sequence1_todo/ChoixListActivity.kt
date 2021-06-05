@@ -8,14 +8,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
 import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.data.DataProvider
 
@@ -83,7 +79,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                     putExtra("id", id.toString())
                 }
         Log.d("ChoixListActivity", "${intentVersShowListActivity}")
-        // startActivity(intentVersShowListActivity)
+        startActivity(intentVersShowListActivity)
     }
 
     private fun setupRecyclerView() {

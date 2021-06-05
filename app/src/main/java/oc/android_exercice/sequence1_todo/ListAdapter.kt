@@ -12,8 +12,8 @@ class ListAdapter(
         var listes: MutableList<ListeToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
 
-    fun show(posts: List<ListeToDo>) {
-        this.listes.addAll(posts)
+    fun show(listsToShow: List<ListeToDo>) {
+        this.listes.addAll(listsToShow)
         notifyDataSetChanged()
     }
 

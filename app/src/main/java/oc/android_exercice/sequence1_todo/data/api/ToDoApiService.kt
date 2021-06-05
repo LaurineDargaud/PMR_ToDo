@@ -2,6 +2,7 @@ package oc.android_exercice.sequence1_todo.data.api
 
 import oc.android_exercice.sequence1_todo.ListeToDo
 import oc.android_exercice.sequence1_todo.data.model.AuthentificationResponse
+import oc.android_exercice.sequence1_todo.data.model.ItemsResponse
 import oc.android_exercice.sequence1_todo.data.model.ListsResponse
 import okhttp3.ResponseBody
 import retrofit2.http.*
@@ -14,4 +15,7 @@ interface ToDoApiService {
 
     @GET("lists")
     suspend fun getLists(@Query("hash") hash: String) : ListsResponse
+
+    @GET("lists/{idList}/items")
+    suspend fun getItems(@Path("idList") idList: String, @Query("hash") hash: String) : ItemsResponse
 }

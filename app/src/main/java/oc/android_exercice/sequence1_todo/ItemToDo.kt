@@ -1,8 +1,16 @@
 package oc.android_exercice.sequence1_todo
 
+import com.google.gson.annotations.SerializedName
+
 class ItemToDo(
+        @SerializedName("id")
+        var id: Int,
+        @SerializedName("label")
         var description: String = "Nouvel Item",
-        var fait: Boolean = false) {
+        @SerializedName("checked")
+        var fait: Boolean = false,
+        @SerializedName("url")
+        var url: String = "") {
     fun changeFait(){
         if (fait){
             fait = false

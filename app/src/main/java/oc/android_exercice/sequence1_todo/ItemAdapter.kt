@@ -1,5 +1,6 @@
 package oc.android_exercice.sequence1_todo
 
+import android.content.ClipData
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ItemAdapter(
         private val actionListener: ActionListener,
-        var items: MutableList<ItemToDo>
+        var items: MutableList<ItemToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+
+    fun show(itemsToShow: List<ItemToDo>) {
+        this.items.addAll(itemsToShow)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         Log.d("ItemAdapter", "onCreateViewHolder")
