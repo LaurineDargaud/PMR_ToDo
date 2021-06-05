@@ -1,7 +1,10 @@
 package oc.android_exercice.sequence1_todo
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -9,11 +12,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
 
 class MainActivity : AppCompatActivity() {
     //Initialisation des variables
-    private var buttonOK: Button? = null
+    private lateinit var buttonOK: Button
     private var pseudo: EditText? = null
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
@@ -35,15 +40,26 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         val s: String? = sp?.getString("login", "login inconnu")
         pseudo?.setText(s)
+    }
 
+    //ERREUR AVEC LA STATUS BAR MANAGER
+    override fun onResume() {
+        super.onResume()
+        //Appel de la méthode vérifiant la connexion à Internet. Débloquage potentiel du bouton OK
+        if (isConnectedToInternet()) {
+            buttonOK.isEnabled = true
+        } else {
+            buttonOK.isEnabled=false
+            val internetToast : Toast = Toast.makeText(this, "Pas d'accès à Internet. Configurer votre connexion et réouvrir l'app.", Toast.LENGTH_LONG)
+            internetToast.show()
+        }
     }
 
     private fun onClickFun() {
         buttonOK!!.setOnClickListener {
 
-            val nom: String = pseudo?.text.toString()
-
             // Stockage du pseudo pour une prochaine connexion
+            val nom: String = pseudo?.text.toString()
             sp_editor?.putString("login", nom)
             sp_editor?.commit()
 
@@ -75,6 +91,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    // Méthode testant la connexion à Internet.
+    fun isConnectedToInternet () : Boolean {
+        val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
+        return isConnected
     }
 }
 
