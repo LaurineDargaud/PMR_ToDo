@@ -46,7 +46,6 @@ class ListAdapter(
             listView.setOnClickListener {
                 val listPosition = adapterPosition
                 if (listPosition != RecyclerView.NO_POSITION) {
-                    val clickedList = listes[listPosition]
                     actionListener.onItemClicked(listPosition)
                 }
             }

@@ -11,7 +11,7 @@ class ListeToDo(
         var id: Int
 ) {
     override fun toString(): String {
-        return "titreListeToDo='$titreListeToDo'"
+        return "[ titreListeToDo='$titreListeToDo', id='${id} ]"
     }
 
     fun rechercherItems(descriptionItem: String): ItemToDo? {
