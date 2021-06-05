@@ -23,9 +23,8 @@ object DataProvider {
     private val service = retrofit.create(ToDoApiService::class.java)
 
 
-    suspend fun authentificationFromApi(): String {
-        Log.d("test",${service.authentification("pl","pl")})
-        return service.authentification("pl","pl")
+    suspend fun authentificationFromApi(username:String, password:String): String {
+        return service.authentification(username,password).hash
     }
 
 }
