@@ -15,6 +15,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
+import kotlinx.coroutines.launch
+import oc.android_exercice.sequence1_todo.data.DataProvider.authentificationFromApi
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     //Initialisation des variables
@@ -67,7 +70,10 @@ class MainActivity : AppCompatActivity() {
 
             //Authentification
             val mdp: String = motDePasse?.text.toString()
-            //authentification(nom, mdp)
+            activityScope.launch{
+                authentificationFromApi(nom, mdp)
+            }
+
 
             //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
             val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
