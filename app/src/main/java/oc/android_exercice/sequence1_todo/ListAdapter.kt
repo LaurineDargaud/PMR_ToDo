@@ -9,8 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ListAdapter(
         private val actionListener: ActionListener,
-        var listes: MutableList<ListeToDo>
+        var listes: MutableList<ListeToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
+
+    fun show(posts: List<ListeToDo>) {
+        this.listes.addAll(posts)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         Log.d("ListAdapter", "onCreateViewHolder")
