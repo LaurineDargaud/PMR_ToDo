@@ -24,7 +24,7 @@ object DataProvider {
 
 
     suspend fun authentificationFromApi(username:String, password:String): String {
-        return service.authentification(username,password)
+        return service.authentification(username,password).hash
     }
 
 }

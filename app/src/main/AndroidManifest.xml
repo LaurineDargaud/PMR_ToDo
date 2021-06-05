@@ -11,7 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Sequence1_ToDo">
+        android:theme="@style/Theme.Sequence1_ToDo"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".ChoixListActivity"
             android:label="ChoixListActivity"></activity>

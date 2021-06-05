@@ -80,10 +80,10 @@ class MainActivity : AppCompatActivity() {
             //authentificationFromApi(nom, mdp)
             activityScope.launch{
                 try{
-                    val hash  = authentificationFromApi("pl", "pl")
-                    Log.d("MainActivity","hash = $hash")
+                    val hash = authentificationFromApi("pl", "pl")
+                    Log.d("MainActivity","hash = ${hash}")
                 } catch(e:Exception){
-                    // erreur d'authentification
+                    Log.d("MainActivity","erreur authentification = ${e}")
                 }
             }
 
