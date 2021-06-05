@@ -1,6 +1,7 @@
 package oc.android_exercice.sequence1_todo.data
 
 import android.util.Log
+import oc.android_exercice.sequence1_todo.ListeToDo
 import oc.android_exercice.sequence1_todo.data.api.ToDoApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -25,6 +26,10 @@ object DataProvider {
 
     suspend fun authentificationFromApi(username:String, password:String): String {
         return service.authentification(username,password).hash
+    }
+
+    suspend fun getListsFromApi(hash:String): List<ListeToDo> {
+        return service.getLists(hash).lists
     }
 
 }

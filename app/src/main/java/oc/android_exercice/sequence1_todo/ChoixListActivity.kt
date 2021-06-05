@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+import kotlinx.coroutines.*
+import oc.android_exercice.sequence1_todo.data.DataProvider
 
 
 class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
@@ -25,6 +27,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                     Dispatchers.Main
     )
     var job : Job? = null
+
+    var hash : String? = null
 
     private lateinit var listAdapter: ListAdapter
 
@@ -38,6 +42,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
 
+        hash = sp?.getString("hash","")
+
         setupRecyclerView()
         loadAndDisplayLists()
 
@@ -46,11 +52,11 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         btnAddList.setOnClickListener {
             val etTitre: EditText = findViewById(R.id.editTextNewList)
             val titre = etTitre.text.toString()
-            if (titre.isNotEmpty()) {
-                val liste = ListeToDo(titre)
+            //if (titre.isNotEmpty()) {
+                //val liste = ListeToDo(titre)
                 // ajouter la liste en requête POST
-                etTitre.text.clear()
-            }
+                //etTitre.text.clear()
+            //}
         }
     }
 
@@ -96,14 +102,14 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         activityScope.launch {
             showProgress(true)
             try {
-                val lists = DataProvider.getListFromApi()
+                val lists = DataProvider.getListsFromApi(hash.toString())
                 listAdapter.show(lists)
+                Log.d("ChoixListActivity","lists = ${lists}")
 
             } catch (e: Exception) {
-                Log.d("ChoixListActivity","Erreur de chargement")
+                Log.d("ChoixListActivity","Erreur de chargement = ${e}")
             }
             showProgress(false)
         }
-
     }
 }
