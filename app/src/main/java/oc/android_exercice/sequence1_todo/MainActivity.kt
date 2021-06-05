@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     //Initialisation des variables
     private lateinit var buttonOK: Button
     private var pseudo: EditText? = null
+    private var motDePasse: EditText? = null
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         //Récupération des éléments graphiques du layout de l'activité dans le code
         buttonOK = findViewById(R.id.buttonOK)
         pseudo = findViewById(R.id.editTextPseudo)
+        motDePasse = findViewById(R.id.editTextPassword)
 
         //Appel à la méthode gérant les clicks sur le buttonOK
         onClickFun()
@@ -63,6 +65,10 @@ class MainActivity : AppCompatActivity() {
             sp_editor?.putString("login", nom)
             sp_editor?.commit()
 
+            //Authentification
+            val mdp: String = motDePasse?.text.toString()
+            //authentification(nom, mdp)
+
             //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
             val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
                 putExtra("pseudo", nom)
@@ -71,6 +77,13 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+    //Fonction demandant l'authentification à l'API et retournant le hash du token d'identification
+    //private fun authentification(nom: String, mdp: String) : Boolean {
+        //Si l'authentification se passe bien, retourner vrai et enregistrer le token d'identification dans les préf
+        //Si l'authentification échoue, renvoyer false et un toast pour informer du mauvais mdp ou pseudo
+
+    //}
 
 
     // affiche le menu ActionBar si la méthode renvoie vrai
