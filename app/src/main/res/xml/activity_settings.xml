@@ -13,5 +13,9 @@
             android:key="dataJSON"
             android:title="Les DATA JSON"
             android:defaultValue="[]" />
+        <EditTextPreference
+            android:key="baseURL"
+            android:title="URL de base de l'API"
+            android:defaultValue="http://tomnab.fr/todo-api/" />
     </PreferenceCategory>
 </PreferenceScreen>
