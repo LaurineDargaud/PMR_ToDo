@@ -25,12 +25,14 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     var hash : String? = null
     var idList : String? = null
 
+    lateinit var clickedItem : ItemToDo
+
     private lateinit var itemAdapter: ItemAdapter
 
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
-    lateinit var items : List<ItemToDo>
+    lateinit var items : MutableList<ItemToDo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +66,8 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
                         Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
                         // ajouter item à la recycle view pour l'affichage
-                        itemAdapter.show(listOf(addedItem))
+                        items.add(addedItem)
+                        itemAdapter.update(items)
                     } catch (e:Exception) {
                         Log.d("ShowListActivity","Erreur à l'ajout d'item : ${e}")
                     }
@@ -76,11 +79,12 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on change le "fait"
-        val clickedItem : ItemToDo = items[position!!.toInt()]
+        clickedItem = items[position!!.toInt()]
         Log.d("ShowListActivity", "Clic sur l'item $clickedItem position $position de la liste $idList")
         activityScope.launch {
             try{
                 DataProvider.updateCheckItemFromApi(hash.toString(), idList!!, clickedItem.id.toString(), clickedItem.fait_intValue.toString())
+                clickedItem.changeFait()
             } catch (e:Exception){
                 Log.e("ShowListActivity","Erreur de changement d'état d'item : ${e}")
             }

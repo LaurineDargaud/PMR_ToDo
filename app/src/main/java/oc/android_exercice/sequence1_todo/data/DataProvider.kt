@@ -30,12 +30,12 @@ object DataProvider {
         return service.authentification(username,password).hash
     }
 
-    suspend fun getListsFromApi(hash:String): List<ListeToDo> {
-        return service.getLists(hash).lists
+    suspend fun getListsFromApi(hash:String): MutableList<ListeToDo> {
+        return service.getLists(hash).lists.toMutableList()
     }
 
-    suspend fun getItemsFromApi(hash:String, idList:String): List<ItemToDo> {
-        return service.getItems(idList, hash).items
+    suspend fun getItemsFromApi(hash:String, idList:String): MutableList<ItemToDo> {
+        return service.getItems(idList, hash).items.toMutableList()
     }
 
     suspend fun updateCheckItemFromApi(hash:String, idList:String, idItem:String, fait_intValue:String) {

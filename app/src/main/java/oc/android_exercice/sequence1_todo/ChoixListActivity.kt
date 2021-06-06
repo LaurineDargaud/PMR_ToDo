@@ -31,7 +31,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
-    lateinit var lists : List<ListeToDo>
+    lateinit var lists : MutableList<ListeToDo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                         Log.d("ChoixListActivity", "Ajout de la liste $titre")
                         etTitre.text.clear()
                         // on l'ajoute à la recycle view pour l'affichage
-                        listAdapter.show(listOf(addedList))
+                        lists.add(addedList)
+                        listAdapter.update(lists)
 
                     } catch (e: Exception) {
                         Log.d("ChoixListActivity", "Erreur à l'ajout de liste  = ${e}")
