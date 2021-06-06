@@ -1,6 +1,7 @@
 package oc.android_exercice.sequence1_todo.data
 
 import android.util.Log
+import com.google.gson.annotations.SerializedName
 import oc.android_exercice.sequence1_todo.ItemToDo
 import oc.android_exercice.sequence1_todo.ListeToDo
 import oc.android_exercice.sequence1_todo.data.api.ToDoApiService
@@ -42,8 +43,12 @@ object DataProvider {
         return service.updateCheckItem(idList, idItem, newFaitIntValue, hash)
     }
 
-    suspend fun addItemFromApi(hash:String, idList:String, labelItem:String){
-        return service.addItem(idList,labelItem,hash)
+    suspend fun addItemFromApi(hash:String, idList:String, labelItem:String): ItemToDo{
+        return service.addItem(idList,labelItem,hash).item
+    }
+
+    suspend fun addListFromApi(hash:String, label:String): ListeToDo{
+        return service.addList(label,hash).list
     }
 
 }

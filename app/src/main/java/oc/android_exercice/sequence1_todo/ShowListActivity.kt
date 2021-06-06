@@ -41,6 +41,12 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
         hash = sp?.getString("hash","")
 
+        // on récupère l'id de la liste via le bundle de l'intent
+        var bundle = this.intent.extras
+        Log.d("ShowListActivity", "Bundle transmis ${bundle}")
+        idList = bundle?.getString("id")
+        Log.d("ShowListActivity", "idList = $idList")
+
         setupRecyclerView()
         loadAndDisplayItems()
 
@@ -54,10 +60,11 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
                 activityScope.launch {
                     try{
                         // ajouter item dans la liste
-                        DataProvider.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                        var addedItem = DataProvider.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                        Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
-                        // recharger la liste
-                        loadAndDisplayItems()
+                        // ajouter item à la recycle view pour l'affichage
+                        itemAdapter.show(listOf(addedItem))
                     } catch (e:Exception) {
                         Log.d("ShowListActivity","Erreur à l'ajout d'item : ${e}")
                     }
@@ -96,12 +103,6 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     }
 
     private fun loadAndDisplayItems(){
-        // on récupère l'id de la liste via le bundle de l'intent
-        var bundle = this.intent.extras
-        Log.d("ShowListActivity", "Bundle transmis ${bundle}")
-        idList = bundle?.getString("id")
-        Log.d("ShowListActivity", "idList = $idList")
-
         activityScope.launch {
             showProgress(true)
             try {

@@ -42,6 +42,11 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         hash = sp?.getString("hash","")
 
+        // on récupère pseudo de l'user via le bundle de l'intent
+        var bundlePseudo = this.intent.extras
+        var pseudo = bundlePseudo?.getString("pseudo")
+        Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
+
         setupRecyclerView()
         loadAndDisplayLists()
 
@@ -50,11 +55,21 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         btnAddList.setOnClickListener {
             val etTitre: EditText = findViewById(R.id.editTextNewList)
             val titre = etTitre.text.toString()
-            //if (titre.isNotEmpty()) {
-                //val liste = ListeToDo(titre)
-                // ajouter la liste en requête POST
-                //etTitre.text.clear()
-            //}
+            if (titre.isNotEmpty()) {
+                activityScope.launch {
+                    try {
+                        // on crée une liste de label "titre"
+                        var addedList = DataProvider.addListFromApi(hash.toString(),titre)
+                        Log.d("ChoixListActivity", "Ajout de la liste $titre")
+                        etTitre.text.clear()
+                        // on l'ajoute à la recycle view pour l'affichage
+                        listAdapter.show(listOf(addedList))
+
+                    } catch (e: Exception) {
+                        Log.d("ChoixListActivity", "Erreur à l'ajout de liste  = ${e}")
+                    }
+                }
+            }
         }
     }
 
@@ -90,12 +105,6 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     }
 
     private fun loadAndDisplayLists(){
-
-        // on récupère pseudo de l'user via le bundle de l'intent
-        var bundlePseudo = this.intent.extras
-        var pseudo = bundlePseudo?.getString("pseudo")
-        Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
-
         activityScope.launch {
             showProgress(true)
             try {
