@@ -11,7 +11,7 @@ class ListeToDo(
         var id: Int
 ) {
     override fun toString(): String {
-        return "titreListeToDo='$titreListeToDo'"
+        return "[ titreListeToDo='$titreListeToDo', id='${id} ]"
     }
 
     fun rechercherItems(descriptionItem: String): ItemToDo? {
@@ -20,6 +20,7 @@ class ListeToDo(
     }
 
     fun ajouterItem(descriptionItem: String){
-        items.add(ItemToDo(descriptionItem))
+        // A CHANGER = récupérer le nombre total d'items existants
+        items.add(ItemToDo(description = descriptionItem, id = 42))
     }
 }

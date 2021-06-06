@@ -12,8 +12,8 @@ class ListAdapter(
         var listes: MutableList<ListeToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
 
-    fun show(posts: List<ListeToDo>) {
-        this.listes.addAll(posts)
+    fun show(listsToShow: List<ListeToDo>) {
+        this.listes.addAll(listsToShow)
         notifyDataSetChanged()
     }
 
@@ -46,7 +46,6 @@ class ListAdapter(
             listView.setOnClickListener {
                 val listPosition = adapterPosition
                 if (listPosition != RecyclerView.NO_POSITION) {
-                    val clickedList = listes[listPosition]
                     actionListener.onItemClicked(listPosition)
                 }
             }

@@ -8,14 +8,10 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
 import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.data.DataProvider
 
@@ -34,6 +30,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
+
+    lateinit var lists : List<ListeToDo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,14 +71,13 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     }
 
     override fun onItemClicked(position: Int) {
-        // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant la position en Intent
-        Log.d("ChoixListActivity", "Clic sur l'item position $position")
+        // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant l'id en Intent
+        val id : Int = lists[position!!.toInt()].id
+        Log.d("ChoixListActivity", "Clic sur la liste en position $position d'id $id")
         val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
                 .apply {
-                    putExtra("position", position.toString())
+                    putExtra("id", id.toString())
                 }
-        // intentVersShowListActivity.putExtra("position",position.toString())
-        // intentVersShowListActivity.putExtra("pseudo",profil.login)
         Log.d("ChoixListActivity", "${intentVersShowListActivity}")
         startActivity(intentVersShowListActivity)
     }
@@ -102,7 +99,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         activityScope.launch {
             showProgress(true)
             try {
-                val lists = DataProvider.getListsFromApi(hash.toString())
+                lists = DataProvider.getListsFromApi(hash.toString())
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity","lists = ${lists}")
 

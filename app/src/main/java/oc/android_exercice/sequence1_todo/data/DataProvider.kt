@@ -1,6 +1,7 @@
 package oc.android_exercice.sequence1_todo.data
 
 import android.util.Log
+import oc.android_exercice.sequence1_todo.ItemToDo
 import oc.android_exercice.sequence1_todo.ListeToDo
 import oc.android_exercice.sequence1_todo.data.api.ToDoApiService
 import retrofit2.Retrofit
@@ -30,6 +31,19 @@ object DataProvider {
 
     suspend fun getListsFromApi(hash:String): List<ListeToDo> {
         return service.getLists(hash).lists
+    }
+
+    suspend fun getItemsFromApi(hash:String, idList:String): List<ItemToDo> {
+        return service.getItems(idList, hash).items
+    }
+
+    suspend fun updateCheckItemFromApi(hash:String, idList:String, idItem:String, fait_intValue:String) {
+        var newFaitIntValue:String = if (fait_intValue == "1") "0" else "1"
+        return service.updateCheckItem(idList, idItem, newFaitIntValue, hash)
+    }
+
+    suspend fun addItemFromApi(hash:String, idList:String, labelItem:String){
+        return service.addItem(idList,labelItem,hash)
     }
 
 }
