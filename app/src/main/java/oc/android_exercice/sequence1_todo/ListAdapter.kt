@@ -17,6 +17,11 @@ class ListAdapter(
         notifyDataSetChanged()
     }
 
+    fun update(listsToShow: MutableList<ListeToDo>) {
+        this.listes = listsToShow
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         Log.d("ListAdapter", "onCreateViewHolder")
         return ListViewHolder(

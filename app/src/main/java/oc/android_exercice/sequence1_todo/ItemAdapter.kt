@@ -20,6 +20,11 @@ class ItemAdapter(
         notifyDataSetChanged()
     }
 
+    fun update(itemsToShow: MutableList<ItemToDo>) {
+        this.items = itemsToShow
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         Log.d("ItemAdapter", "onCreateViewHolder")
         return ItemViewHolder(

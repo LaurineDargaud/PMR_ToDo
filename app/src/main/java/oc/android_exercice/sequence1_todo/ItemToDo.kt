@@ -15,6 +15,10 @@ class ItemToDo(
     var fait : Boolean = false
         get() = (fait_intValue != 0)
 
+    fun changeFait(){
+        fait_intValue = if (fait_intValue == 0) 1 else 0
+    }
+
     override fun toString(): String {
         return "[ id = $id, description='$description', fait = ${fait}, fait_intValue = ${fait_intValue}, url = $url ]"
     }
