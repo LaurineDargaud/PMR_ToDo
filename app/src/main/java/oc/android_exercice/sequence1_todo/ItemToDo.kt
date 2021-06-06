@@ -1,6 +1,5 @@
 package oc.android_exercice.sequence1_todo
 
-import android.util.Log
 import com.google.gson.annotations.SerializedName
 
 class ItemToDo(
@@ -16,15 +15,7 @@ class ItemToDo(
     var fait : Boolean = false
         get() = (fait_intValue != 0)
 
-    fun changeFait(){
-        fait = !fait
-    }
-
     override fun toString(): String {
         return "[ id = $id, description='$description', fait = ${fait}, fait_intValue = ${fait_intValue}, url = $url ]"
     }
-
-
-
-
 }

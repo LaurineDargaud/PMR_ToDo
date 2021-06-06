@@ -1,23 +1,18 @@
 package oc.android_exercice.sequence1_todo
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.data.DataProvider
-import java.lang.reflect.Type
 
 class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
@@ -28,6 +23,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     var job : Job? = null
 
     var hash : String? = null
+    var idList : String? = null
 
     private lateinit var itemAdapter: ItemAdapter
 
@@ -63,8 +59,15 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on change le "fait"
-        Log.d("ShowListActivity", "Clic sur l'item position $position")
-        // selected_list.items.get(position).changeFait()
+        val clickedItem : ItemToDo = items[position!!.toInt()]
+        Log.d("ShowListActivity", "Clic sur l'item $clickedItem position $position de la liste $idList")
+        activityScope.launch {
+            try{
+                DataProvider.updateCheckItemFromApi(hash.toString(), idList!!, clickedItem.id.toString(), clickedItem.fait_intValue.toString())
+            } catch (e:Exception){
+                Log.e("ShowListActivity","Erreur de changement d'état d'item : ${e}")
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -86,7 +89,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
         // on récupère l'id de la liste via le bundle de l'intent
         var bundle = this.intent.extras
         Log.d("ShowListActivity", "Bundle transmis ${bundle}")
-        var idList : String? = bundle?.getString("id")
+        idList = bundle?.getString("id")
         Log.d("ShowListActivity", "idList = $idList")
 
         activityScope.launch {

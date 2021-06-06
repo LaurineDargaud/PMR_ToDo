@@ -16,4 +16,12 @@ interface ToDoApiService {
 
     @GET("lists/{idList}/items")
     suspend fun getItems(@Path("idList") idList: String, @Query("hash") hash: String) : ItemsResponse
+
+    @PUT("lists/{idList}/items/{idItem}")
+    suspend fun updateCheckItem(
+        @Path("idList") idList : String,
+        @Path("idItem") idItem : String,
+        @Query("check") check : String,
+        @Header("hash") hash : String
+    )
 }
