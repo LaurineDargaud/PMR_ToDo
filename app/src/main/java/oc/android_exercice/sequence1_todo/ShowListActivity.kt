@@ -51,8 +51,18 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             var toDoDescription : EditText  = findViewById(R.id.editTextAddToDoItem)
             var toDoTitle : String = toDoDescription.text.toString()
             if(toDoTitle.isNotEmpty()){
-                // ajout de l'item dans la liste
-                toDoDescription.text.clear()
+                activityScope.launch {
+                    try{
+                        // ajouter item dans la liste
+                        DataProvider.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                        toDoDescription.text.clear()
+                        // recharger la liste
+                        loadAndDisplayItems()
+                    } catch (e:Exception) {
+                        Log.d("ShowListActivity","Erreur à l'ajout d'item : ${e}")
+                    }
+                }
+
             }
         }
     }

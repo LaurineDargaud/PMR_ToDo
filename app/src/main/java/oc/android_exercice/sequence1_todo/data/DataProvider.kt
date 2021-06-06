@@ -42,4 +42,8 @@ object DataProvider {
         return service.updateCheckItem(idList, idItem, newFaitIntValue, hash)
     }
 
+    suspend fun addItemFromApi(hash:String, idList:String, labelItem:String){
+        return service.addItem(idList,labelItem,hash)
+    }
+
 }
