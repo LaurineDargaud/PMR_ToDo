@@ -22,7 +22,6 @@ object DataProvider {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-
     private val service = retrofit.create(ToDoApiService::class.java)
 
 

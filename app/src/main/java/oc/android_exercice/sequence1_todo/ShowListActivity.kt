@@ -79,7 +79,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
     override fun onItemClicked(position: Int) {
         // au clic sur un item, on change le "fait"
-        clickedItem = items[position!!.toInt()]
+        clickedItem = items[position.toInt()]
         Log.d("ShowListActivity", "Clic sur l'item $clickedItem position $position de la liste $idList")
         activityScope.launch {
             try{
