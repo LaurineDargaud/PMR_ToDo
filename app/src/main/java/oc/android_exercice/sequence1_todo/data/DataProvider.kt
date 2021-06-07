@@ -1,5 +1,7 @@
 package oc.android_exercice.sequence1_todo.data
 
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.util.Log
 import oc.android_exercice.sequence1_todo.data.api.ToDoApiService
 import retrofit2.Retrofit
@@ -12,7 +14,7 @@ object DataProvider {
     var sp_editor : SharedPreferences.Editor = sp?.edit()
     var BASE_URL : String? = sp?.getString("baseURL","http://tomnab.fr/todo-api/")*/
 
-    var BASE_URL : String = "http://tomnab.fr/todo-api/"
+    //var BASE_URL : String = "http://tomnab.fr/todo-api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
