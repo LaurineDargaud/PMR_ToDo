@@ -48,17 +48,32 @@ class MainActivity : AppCompatActivity() {
         pseudo = findViewById(R.id.editTextPseudo)
         motDePasse = findViewById(R.id.editTextPassword)
 
-        //Appel à la méthode gérant les clicks sur le buttonOK
-        onClickFun()
-    }
+        // On utilise un bundle pour détecter les déconnexions depuis les activités ChoixList et ShowList
+        var bundleLogout = this.intent.extras
+        var logout: Boolean = bundleLogout?.getBoolean("logout") == true
+        Log.d("connexion auto", "logout state = $logout")
 
-    //Pré-remplissage des champs pseudo et mot de passe
-    override fun onStart() {
-        super.onStart()
+        //Pré-remplissage des champs pseudo et mot de passe (si on ne cherche pas à faire une déconnexion)
         val nom: String? = sp?.getString("login", "login inconnu")
         val mdp: String? = sp?.getString("mdp", "mdp inconnu")
-        pseudo?.setText(nom)
-        motDePasse?.setText(mdp)
+        if (logout.not()) {
+            pseudo?.setText(nom)
+            motDePasse?.setText(mdp)
+        }
+
+        //Appel à la méthode gérant les clicks sur le buttonOK
+        onClickFun()
+
+        //Connexion automatique
+        if (nom != "login inconnu" && mdp != "mdp inconnu" && logout.not()) {
+            Log.d("connexion auto", "nom : ${nom} + mdp : ${mdp}")
+            buttonOK.performClick()
+        }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
     }
 
     //Bloquage potentiel du bouton OK
@@ -92,7 +107,8 @@ class MainActivity : AppCompatActivity() {
             // Gestion de l'authentification à l'API dans une coroutine
             activityScope.launch {
                 try {
-                    // En cas de succès, le hash du token d'identification est enregistré dans les SP et lancement de l'activité ChoixListActivity
+                    // En cas de succès, le hash du token d'identification est enregistré dans les SP
+                    // et lancement de l'activité ChoixListActivity
                     val hash = authentificationFromApi(nom, mdp)
                     Log.d("MainActivity login", "hash = ${hash}")
                     sp_editor?.putString("hash", hash)

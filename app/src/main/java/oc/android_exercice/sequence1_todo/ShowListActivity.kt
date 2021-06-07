@@ -152,7 +152,9 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             }
             R.id.menu_logout -> {
                 //Retour à l'activité Main
-                val intentVersMainActivity = Intent(this, MainActivity::class.java)
+                val intentVersMainActivity = Intent(this, MainActivity::class.java).apply {
+                    putExtra("logout", true)
+                }
                 startActivity(intentVersMainActivity)
             }
         }
