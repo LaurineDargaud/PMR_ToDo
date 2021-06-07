@@ -21,6 +21,7 @@ import oc.android_exercice.sequence1_todo.data.DataProvider.authentificationFrom
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
+
     //Initialisation des variables
     private lateinit var buttonOK: Button
     private var pseudo: EditText? = null
@@ -29,16 +30,19 @@ class MainActivity : AppCompatActivity() {
     private var sp_editor: SharedPreferences.Editor? = null
 
     private val activityScope = CoroutineScope(
-            SupervisorJob() +
-                    Dispatchers.Main
+        SupervisorJob() +
+                Dispatchers.Main
     )
-    var job : Job? = null
+    var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Gestion des SP
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
+
         //Récupération des éléments graphiques du layout de l'activité dans le code
         buttonOK = findViewById(R.id.buttonOK)
         pseudo = findViewById(R.id.editTextPseudo)
@@ -48,78 +52,83 @@ class MainActivity : AppCompatActivity() {
         onClickFun()
     }
 
+    //Pré-remplissage des champs pseudo et mot de passe
     override fun onStart() {
         super.onStart()
-        val s: String? = sp?.getString("login", "login inconnu")
-        pseudo?.setText(s)
+        val nom: String? = sp?.getString("login", "login inconnu")
+        val mdp: String? = sp?.getString("mdp", "mdp inconnu")
+        pseudo?.setText(nom)
+        motDePasse?.setText(mdp)
     }
 
-    //ERREUR AVEC LA STATUS BAR MANAGER
+    //Bloquage potentiel du bouton OK
     override fun onResume() {
         super.onResume()
-        //Appel de la méthode vérifiant la connexion à Internet. Débloquage potentiel du bouton OK
+        //Appel de la méthode vérifiant la connexion à Internet
         if (isConnectedToInternet()) {
             buttonOK.isEnabled = true
         } else {
-            buttonOK.isEnabled=false
-            val internetToast : Toast = Toast.makeText(this, "Pas d'accès à Internet. Configurer votre connexion et réouvrir l'app.", Toast.LENGTH_LONG)
+            buttonOK.isEnabled = false
+            val internetToast: Toast = Toast.makeText(
+                this,
+                "Pas d'accès à Internet. Configurer votre connexion et réouvrir l'app.",
+                Toast.LENGTH_LONG
+            )
             internetToast.show()
         }
     }
 
+    //Méthode gérant le clic sur le bouton OK (authentification + enregistrement des identifiants dans les SP)
     private fun onClickFun() {
         buttonOK!!.setOnClickListener {
 
-            // Stockage du pseudo pour une prochaine connexion
+            // Stockage du pseudo et du mdp pour une prochaine connexion
             val nom: String = pseudo?.text.toString()
+            val mdp: String = motDePasse?.text.toString()
             sp_editor?.putString("login", nom)
+            sp_editor?.putString("mdp", mdp)
             sp_editor?.commit()
 
-            //Authentification
-            val mdp: String = motDePasse?.text.toString()
-            activityScope.launch{
-                try{
+            // Gestion de l'authentification à l'API dans une coroutine
+            activityScope.launch {
+                try {
+                    // En cas de succès, le hash du token d'identification est enregistré dans les SP et lancement de l'activité ChoixListActivity
                     val hash = authentificationFromApi(nom, mdp)
-                    Log.d("MainActivity","hash = ${hash}")
-                    // Sauvegarde du hash dans les SP
+                    Log.d("MainActivity login", "hash = ${hash}")
                     sp_editor?.putString("hash", hash)
                     sp_editor?.commit()
-                    //Lancement de l'activité ChoixListActivity si la connexion fonctionne
-                    val intentVersChoixListActivity: Intent = Intent(this@MainActivity, ChoixListActivity::class.java).apply {
-                        putExtra("pseudo", nom)
-                    }
+                    val intentVersChoixListActivity: Intent =
+                        Intent(this@MainActivity, ChoixListActivity::class.java).apply {
+                            putExtra("pseudo", nom)
+                        }
                     startActivity(intentVersChoixListActivity)
-                } catch(e:Exception){
-                    Log.d("MainActivity","erreur authentification = ${e}")
-                    Toast.makeText(this@MainActivity, "Erreur d'authentification",Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    // L'échec de l'authentification se traduit pour l'utilisateur pour un Toast d'erreur
+                    Log.d("MainActivity login", "erreur authentification = ${e}")
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Erreur d'authentification",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
             }
-
-
-
-
         }
     }
 
-    //Fonction demandant l'authentification à l'API et retournant le hash du token d'identification
-    //private fun authentification(nom: String, mdp: String) : Boolean {
-        //Si l'authentification se passe bien, retourner vrai et enregistrer le token d'identification dans les préf
-        //Si l'authentification échoue, renvoyer false et un toast pour informer du mauvais mdp ou pseudo
-
-    //}
-
-
-    // affiche le menu ActionBar si la méthode renvoie vrai
+    // Fonction affichant le menu ActionBar (si la méthode renvoie vrai)
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        // R.menu.menu dénote le fichier  res/menu/menu.xml
+        //Instruction pour cacher l'item déconnexion de la MainActivity (l'id de l'item est 1, l'id 0 est pour l'item "Préférences")
+        menu.getItem(1).setVisible(false)
         return true
     }
 
-    // click sur un item du menu
+    // Fonction gérant le clic sur un item du menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
+            // Gestion du clic l'item "Préférences"
             R.id.menu_settings -> {
                 //Permet de lancer l'activité SettingsActivity
                 val intentVersSettingsActivity = Intent(this, SettingsActivity::class.java)
@@ -129,9 +138,8 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-
-    // Méthode testant la connexion à Internet.
-    fun isConnectedToInternet () : Boolean {
+    // Fonction testant la connexion à Internet.
+    fun isConnectedToInternet(): Boolean {
         val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true

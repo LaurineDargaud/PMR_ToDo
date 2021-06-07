@@ -10,46 +10,53 @@ import retrofit2.http.*
 
 
 interface ToDoApiService {
+
+    //Requête pour l'authentification
     @FormUrlEncoded
     @POST("authenticate")
     suspend fun authentification(
         @Field("user") pseudo: String,
         @Field("password") password: String
-    ) : AuthentificationResponse
+    ): AuthentificationResponse
 
+    //Requête pour récupérer l'ensemble des listes d'un utilisateur connecté
     @GET("lists")
-    suspend fun getLists(@Header("hash") hash: String) : ListsResponse
+    suspend fun getLists(@Header("hash") hash: String): ListsResponse
 
+    // Requête pour récupérer les items d'une liste d'id connu
     @GET("lists/{idList}/items")
     suspend fun getItems(
         @Path("idList") idList: String,
         @Header("hash") hash: String
-    ) : ItemsResponse
+    ): ItemsResponse
 
+    // Requête pour modifier l'état d'un item connu (fait ou non)
     @PUT("lists/{idList}/items/{idItem}")
     suspend fun updateCheckItem(
-        @Path("idList") idList : String,
-        @Path("idItem") idItem : String,
-        @Query("check") check : String,
-        @Header("hash") hash : String
+        @Path("idList") idList: String,
+        @Path("idItem") idItem: String,
+        @Query("check") check: String,
+        @Header("hash") hash: String
     )
 
-    data class ItemResponse(@SerializedName("item") val item : ItemToDo)
+    data class ItemResponse(@SerializedName("item") val item: ItemToDo)
 
+    // Requête pour ajouter un item à une liste
     @FormUrlEncoded
     @POST("lists/{idList}/items?label=Nouvel item")
     suspend fun addItem(
-        @Path("idList") idList : String,
-        @Field("label") label : String,
-        @Header("hash") hash : String
-    ) : ItemResponse
+        @Path("idList") idList: String,
+        @Field("label") label: String,
+        @Header("hash") hash: String
+    ): ItemResponse
 
-    data class ListResponse(@SerializedName("list") val list : ListeToDo)
+    data class ListResponse(@SerializedName("list") val list: ListeToDo)
 
+    // Requête pour ajouter une liste
     @FormUrlEncoded
     @POST("lists")
     suspend fun addList(
-        @Field("label") label : String,
-        @Header("hash") hash : String
-    ) : ListResponse
+        @Field("label") label: String,
+        @Header("hash") hash: String
+    ): ListResponse
 }

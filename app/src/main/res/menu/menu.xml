@@ -5,4 +5,8 @@
         android:id="@+id/menu_settings"
         app:showAsAction="never"
         android:title="Préférences"/>
+    <item
+        android:id="@+id/menu_logout"
+        app:showAsAction="ifRoom"
+        android:title="Déconnexion"/>
 </menu>

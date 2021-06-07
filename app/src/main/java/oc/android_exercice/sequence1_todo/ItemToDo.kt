@@ -8,14 +8,15 @@ class ItemToDo(
     @SerializedName("label")
     var description: String = "Nouvel Item",
     @SerializedName("checked")
-    var fait_intValue : Int = 0,
+    var fait_intValue: Int = 0,
     @SerializedName("url")
-    var url: String = ""){
+    var url: String = ""
+) {
 
-    var fait : Boolean = false
+    var fait: Boolean = false
         get() = (fait_intValue != 0)
 
-    fun changeFait(){
+    fun changeFait() {
         fait_intValue = if (fait_intValue == 0) 1 else 0
     }
 
