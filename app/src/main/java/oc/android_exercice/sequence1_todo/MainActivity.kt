@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     // En cas de succès, le hash du token d'identification est enregistré dans les SP
                     // et lancement de l'activité ChoixListActivity
-                    val hash = authentificationFromApi(nom, mdp)
+                    val hash = DataProvider.authentificationFromApi(nom, mdp)
                     Log.d("MainActivity login", "hash = ${hash}")
                     sp_editor?.putString("hash", hash)
                     sp_editor?.commit()

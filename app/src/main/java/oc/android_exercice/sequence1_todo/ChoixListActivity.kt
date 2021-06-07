@@ -35,7 +35,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     private var sp_editor: SharedPreferences.Editor? = null
 
     lateinit var lists: MutableList<ListeToDo>
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)

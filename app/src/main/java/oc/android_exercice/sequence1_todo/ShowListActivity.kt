@@ -123,7 +123,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             showProgress(true)
             try {
                 // on récupère les items de la liste concernée et on les ajouté à la RecycleView
-                items = DataProvider(BASE_URL!!).getItemsFromApi(hash.toString(), idList.toString())
+                items = DataProvider.getItemsFromApi(hash.toString(), idList.toString())
                 itemAdapter.show(items)
                 Log.d("ShowListActivity", "items = ${items}")
 
