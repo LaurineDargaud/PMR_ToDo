@@ -35,8 +35,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     private var sp_editor: SharedPreferences.Editor? = null
 
     lateinit var lists: MutableList<ListeToDo>
-
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
@@ -114,7 +113,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         activityScope.launch {
             showProgress(true)
             try {
-                lists = DataProvider(BASE_URL!!).getListsFromApi(hash.toString())
+                lists = DataProvider.getListsFromApi(hash.toString())
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity", "lists = ${lists}")
 
