@@ -33,6 +33,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     private var sp_editor: SharedPreferences.Editor? = null
 
     lateinit var items : MutableList<ItemToDo>
+    var BASE_URL : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,9 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
 
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
+
+        // Récupération de la base_url
+        BASE_URL = sp?.getString("baseURL","http://tomnab.fr/todo-api/")
 
         hash = sp?.getString("hash","")
 
@@ -62,7 +66,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
                 activityScope.launch {
                     try{
                         // ajouter item dans la liste
-                        var addedItem = DataProvider.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                        var addedItem = DataProvider(BASE_URL!!).addItemFromApi(hash.toString(), idList!!, toDoTitle)
                         Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
                         // ajouter item à la recycle view pour l'affichage
@@ -83,7 +87,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
         Log.d("ShowListActivity", "Clic sur l'item $clickedItem position $position de la liste $idList")
         activityScope.launch {
             try{
-                DataProvider.updateCheckItemFromApi(hash.toString(), idList!!, clickedItem.id.toString(), clickedItem.fait_intValue.toString())
+                DataProvider(BASE_URL!!).updateCheckItemFromApi(hash.toString(), idList!!, clickedItem.id.toString(), clickedItem.fait_intValue.toString())
                 clickedItem.changeFait()
             } catch (e:Exception){
                 Log.e("ShowListActivity","Erreur de changement d'état d'item : ${e}")
@@ -111,7 +115,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             showProgress(true)
             try {
                 // on récupère les items de la liste concernée et on les ajouté à la RecycleView
-                items = DataProvider.getItemsFromApi(hash.toString(), idList.toString())
+                items = DataProvider(BASE_URL!!).getItemsFromApi(hash.toString(), idList.toString())
                 itemAdapter.show(items)
                 Log.d("ShowListActivity","items = ${items}")
 

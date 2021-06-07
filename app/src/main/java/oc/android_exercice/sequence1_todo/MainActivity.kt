@@ -17,7 +17,7 @@ import android.widget.Toast
 import kotlinx.coroutines.*
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
-import oc.android_exercice.sequence1_todo.data.DataProvider.authentificationFromApi
+import oc.android_exercice.sequence1_todo.data.DataProvider
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -28,17 +28,23 @@ class MainActivity : AppCompatActivity() {
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
+    var BASE_URL : String? = null
+
     private val activityScope = CoroutineScope(
             SupervisorJob() +
                     Dispatchers.Main
     )
     var job : Job? = null
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
+        // Récupération de la base_url
+        BASE_URL = sp?.getString("baseURL","http://tomnab.fr/todo-api/")
         //Récupération des éléments graphiques du layout de l'activité dans le code
         buttonOK = findViewById(R.id.buttonOK)
         pseudo = findViewById(R.id.editTextPseudo)
@@ -79,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             val mdp: String = motDePasse?.text.toString()
             activityScope.launch{
                 try{
-                    val hash = authentificationFromApi(nom, mdp)
+                    val hash = DataProvider(BASE_URL!!).authentificationFromApi(nom, mdp)
                     Log.d("MainActivity","hash = ${hash}")
                     // Sauvegarde du hash dans les SP
                     sp_editor?.putString("hash", hash)

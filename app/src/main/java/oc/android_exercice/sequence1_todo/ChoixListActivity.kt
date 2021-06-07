@@ -31,6 +31,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
+    var BASE_URL : String? = null
     lateinit var lists : MutableList<ListeToDo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +40,9 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
+
+        // Récupération de la base_url
+        BASE_URL = sp?.getString("baseURL","http://tomnab.fr/todo-api/")
 
         hash = sp?.getString("hash","")
 
@@ -59,7 +63,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                 activityScope.launch {
                     try {
                         // on crée une liste de label "titre"
-                        var addedList = DataProvider.addListFromApi(hash.toString(),titre)
+                        var addedList = DataProvider(BASE_URL!!).addListFromApi(hash.toString(),titre)
                         Log.d("ChoixListActivity", "Ajout de la liste $titre")
                         etTitre.text.clear()
                         // on l'ajoute à la recycle view pour l'affichage
@@ -109,7 +113,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         activityScope.launch {
             showProgress(true)
             try {
-                lists = DataProvider.getListsFromApi(hash.toString())
+                lists = DataProvider(BASE_URL!!).getListsFromApi(hash.toString())
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity","lists = ${lists}")
 
