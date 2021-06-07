@@ -77,22 +77,26 @@ class MainActivity : AppCompatActivity() {
 
             //Authentification
             val mdp: String = motDePasse?.text.toString()
-            //authentificationFromApi(nom, mdp)
             activityScope.launch{
                 try{
                     val hash = authentificationFromApi(nom, mdp)
                     Log.d("MainActivity","hash = ${hash}")
+                    // Sauvegarde du hash dans les SP
+                    sp_editor?.putString("hash", hash)
+                    sp_editor?.commit()
+                    //Lancement de l'activité ChoixListActivity si la connexion fonctionne
+                    val intentVersChoixListActivity: Intent = Intent(this@MainActivity, ChoixListActivity::class.java).apply {
+                        putExtra("pseudo", nom)
+                    }
+                    startActivity(intentVersChoixListActivity)
                 } catch(e:Exception){
                     Log.d("MainActivity","erreur authentification = ${e}")
+                    Toast.makeText(this@MainActivity, "Erreur d'authentification",Toast.LENGTH_SHORT).show()
                 }
             }
 
 
-            //Lancement de l'activité ChoixListActivity en passant la valeur du pseudo
-            val intentVersChoixListActivity: Intent = Intent(this, ChoixListActivity::class.java).apply {
-                putExtra("pseudo", nom)
-            }
-            startActivity(intentVersChoixListActivity)
+
 
         }
     }

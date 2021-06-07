@@ -5,29 +5,33 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
+import kotlinx.coroutines.*
+import oc.android_exercice.sequence1_todo.data.DataProvider
 
 
 class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
-    private lateinit var listAdapter: ListAdapter
-    private var listes = ListeToDo()
-    private lateinit var profil: ProfilListeToDo
+    private val activityScope = CoroutineScope(
+            SupervisorJob() +
+                    Dispatchers.Main
+    )
+    var job : Job? = null
 
-    private lateinit var profilsList : MutableList<ProfilListeToDo>
+    var hash : String? = null
+
+    private lateinit var listAdapter: ListAdapter
 
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
 
-    var updatedData: String = "{}"
+    lateinit var lists : MutableList<ListeToDo>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,73 +40,83 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
 
+        hash = sp?.getString("hash","")
+
         // on récupère pseudo de l'user via le bundle de l'intent
         var bundlePseudo = this.intent.extras
         var pseudo = bundlePseudo?.getString("pseudo")
         Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
 
-        // on dé-sérialise les profils depuis les shared preferences
-        val data: String? = sp?.getString("dataJSON","[]")
-        Log.d("ChoixListActivity", "Data recuperees depuis SP = $data")
-        val listOfProfilsToDo: Type = object : TypeToken<MutableList<ProfilListeToDo?>?>() {}.type
-        profilsList = Gson().fromJson(data, listOfProfilsToDo)
-        Log.d("ChoixListActivity", "Les profils: ${profilsList}")
+        setupRecyclerView()
+        loadAndDisplayLists()
 
-        // on recherche le profil dans la liste des profils
-        profil = ProfilListeToDo("$pseudo")
-        var isNewProfil: Boolean = true
-        for (unProfil in profilsList) {
-            if (unProfil.login == pseudo) {
-                profil = unProfil
-                isNewProfil = false
-                Log.d("ChoixListActivity", "Profil existant : $profil")
-            }
-        }
-        // dans le cas d'un nouveau profil, on update le JSON dans shared preferences
-        if (isNewProfil) {
-            profilsList.add(profil)
-            updateJSON()
-        }
-
-        // on affiche la liste des listes de l’utilisateur concerné en RecycleView
-
-        listAdapter = ListAdapter(this, profil.listes)
-
-        var rvListes: RecyclerView = findViewById(R.id.rvListes)
-        rvListes.adapter = listAdapter
-        rvListes.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
+        // configuration du bouton ADD pour l'ajout de liste
         var btnAddList: Button = findViewById(R.id.buttonAddList)
         btnAddList.setOnClickListener {
             val etTitre: EditText = findViewById(R.id.editTextNewList)
             val titre = etTitre.text.toString()
             if (titre.isNotEmpty()) {
-                val liste = ListeToDo(titre)
-                profil.ajouteListe(liste)
-                updateJSON()
-                etTitre.text.clear()
+                activityScope.launch {
+                    try {
+                        // on crée une liste de label "titre"
+                        var addedList = DataProvider.addListFromApi(hash.toString(),titre)
+                        Log.d("ChoixListActivity", "Ajout de la liste $titre")
+                        etTitre.text.clear()
+                        // on l'ajoute à la recycle view pour l'affichage
+                        lists.add(addedList)
+                        listAdapter.update(lists)
+
+                    } catch (e: Exception) {
+                        Log.d("ChoixListActivity", "Erreur à l'ajout de liste  = ${e}")
+                    }
+                }
             }
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activityScope.cancel()
+    }
+
+    private fun showProgress(show: Boolean) {
+        val progress = findViewById<View>(R.id.progress)
+        val list = findViewById<View>(R.id.rvListes)
+        progress.isVisible = show
+        list.isVisible = !show
+    }
+
     override fun onItemClicked(position: Int) {
-        // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant la position en Intent
-        Log.d("ChoixListActivity", "Clic sur l'item position $position")
+        // au clic sur un item, on redirige vers la ShowListActivity de cet item en passant l'id en Intent
+        val id : Int = lists[position.toInt()].id
+        Log.d("ChoixListActivity", "Clic sur la liste en position $position d'id $id")
         val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
                 .apply {
-                    putExtra("position", position.toString())
+                    putExtra("id", id.toString())
                 }
-        // intentVersShowListActivity.putExtra("position",position.toString())
-        // intentVersShowListActivity.putExtra("pseudo",profil.login)
         Log.d("ChoixListActivity", "${intentVersShowListActivity}")
         startActivity(intentVersShowListActivity)
     }
 
-    fun updateJSON(){
-        updatedData = Gson().toJson(profilsList)
-        Log.d("ChoixListActivity", "New data: ${updatedData}")
+    private fun setupRecyclerView() {
+        val rvListes: RecyclerView = findViewById(R.id.rvListes)
+        listAdapter = ListAdapter(this)
+        rvListes.adapter = listAdapter
+        rvListes.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    }
 
-        sp_editor?.putString("dataJSON", updatedData)
-        sp_editor?.commit()
+    private fun loadAndDisplayLists(){
+        activityScope.launch {
+            showProgress(true)
+            try {
+                lists = DataProvider.getListsFromApi(hash.toString())
+                listAdapter.show(lists)
+                Log.d("ChoixListActivity","lists = ${lists}")
+
+            } catch (e: Exception) {
+                Log.d("ChoixListActivity","Erreur de chargement = ${e}")
+            }
+            showProgress(false)
+        }
     }
 }
