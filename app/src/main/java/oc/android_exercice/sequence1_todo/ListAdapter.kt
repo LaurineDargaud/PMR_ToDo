@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class ListAdapter(
-        private val actionListener: ActionListener,
-        var listes: MutableList<ListeToDo> = mutableListOf()
+    private val actionListener: ActionListener,
+    var listes: MutableList<ListeToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
 
     fun show(listsToShow: List<ListeToDo>) {
@@ -25,11 +25,11 @@ class ListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         Log.d("ListAdapter", "onCreateViewHolder")
         return ListViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                        R.layout.list_layout,
-                        parent,
-                        false
-                )
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.list_layout,
+                parent,
+                false
+            )
         )
     }
 
@@ -45,7 +45,7 @@ class ListAdapter(
     override fun getItemCount(): Int = listes.size
 
     inner class ListViewHolder(
-            listView: View
+        listView: View
     ) : RecyclerView.ViewHolder(listView) {
         init {
             listView.setOnClickListener {

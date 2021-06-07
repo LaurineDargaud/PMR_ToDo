@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class ItemAdapter(
-        private val actionListener: ActionListener,
-        var items: MutableList<ItemToDo> = mutableListOf()
+    private val actionListener: ActionListener,
+    var items: MutableList<ItemToDo> = mutableListOf()
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     fun show(itemsToShow: List<ItemToDo>) {
@@ -28,11 +28,11 @@ class ItemAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         Log.d("ItemAdapter", "onCreateViewHolder")
         return ItemViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_layout,
-                        parent,
-                        false
-                )
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.item_layout,
+                parent,
+                false
+            )
         )
     }
 
@@ -50,19 +50,19 @@ class ItemAdapter(
     override fun getItemCount(): Int = items.size
 
     inner class ItemViewHolder(
-            itemView: View
-    ) : RecyclerView.ViewHolder(itemView){
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
         init {
             val checkBoxItem = itemView.findViewById<CheckBox>(R.id.checkBoxItem)
 
-            fun changerItem(){
+            fun changerItem() {
                 val itemPosition = adapterPosition
                 if (itemPosition != RecyclerView.NO_POSITION) {
                     actionListener.onItemClicked(itemPosition)
                 }
             }
 
-            checkBoxItem.setOnClickListener{
+            checkBoxItem.setOnClickListener {
                 changerItem()
             }
 
