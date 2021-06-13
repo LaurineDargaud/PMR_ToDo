@@ -13,31 +13,28 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import kotlinx.coroutines.*
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.isVisible
 import oc.android_exercice.sequence1_todo.data.DataProvider
+import org.w3c.dom.Text
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
-    //Initialisation des variables
+    //Déclaration des variables
     private lateinit var buttonOK: Button
+    private lateinit var tvModeDegrade: TextView
     private var pseudo: EditText? = null
     private var motDePasse: EditText? = null
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
-
-    var BASE_URL : String? = null
-
-    private val activityScope = CoroutineScope(
-        SupervisorJob() +
-                Dispatchers.Main
-    )
-    var job: Job? = null
-
-
+    private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var internetState: Boolean? = null
+    private var logout: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,49 +48,39 @@ class MainActivity : AppCompatActivity() {
         buttonOK = findViewById(R.id.buttonOK)
         pseudo = findViewById(R.id.editTextPseudo)
         motDePasse = findViewById(R.id.editTextPassword)
+        tvModeDegrade = findViewById(R.id.textViewModeDegrade)
 
         // On utilise un bundle pour détecter les déconnexions depuis les activités ChoixList et ShowList
-        var bundleLogout = this.intent.extras
-        var logout: Boolean = bundleLogout?.getBoolean("logout") == true
+        var bundle = this.intent.extras
+        Log.d("bundle Main", "bundle : ${bundle}")
+        logout =
+            bundle?.getBoolean("logout") == true //test permettant de ne pas avoir de nullPointerException au démarrage
         Log.d("connexion auto", "logout state = $logout")
+
+        //Appel à la méthode gérant les clicks sur le buttonOK
+        onClickFun()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Récupération de l'état de la connexion à Internet
+        internetState = isConnectedToInternet()
+
+        // Appel de appMode, fonctionnant modifiant l'UI pour signifier à l'utilisateur le mode d'utilisation de l'app
+        appMode(internetState!!)
 
         //Pré-remplissage des champs pseudo et mot de passe (si on ne cherche pas à faire une déconnexion)
         val nom: String? = sp?.getString("login", "login inconnu")
         val mdp: String? = sp?.getString("mdp", "mdp inconnu")
-        if (logout.not()) {
+        if (logout!!.not()) {
             pseudo?.setText(nom)
             motDePasse?.setText(mdp)
         }
 
-        //Appel à la méthode gérant les clicks sur le buttonOK
-        onClickFun()
-
-        //Connexion automatique
-        if (nom != "login inconnu" && mdp != "mdp inconnu" && logout.not()) {
-            Log.d("connexion auto", "nom : ${nom} + mdp : ${mdp}")
-            buttonOK.performClick()
-        }
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-    //Bloquage potentiel du bouton OK
-    override fun onResume() {
-        super.onResume()
-        //Appel de la méthode vérifiant la connexion à Internet
-        if (isConnectedToInternet()) {
-            buttonOK.isEnabled = true
-        } else {
-            buttonOK.isEnabled = false
-            val internetToast: Toast = Toast.makeText(
-                this,
-                "Pas d'accès à Internet. Configurer votre connexion et réouvrir l'app.",
-                Toast.LENGTH_LONG
-            )
-            internetToast.show()
+        //Appel de la méthode gérant la connexion automatique
+        if (nom != null && mdp != null) {
+            autoLogin(nom, mdp, logout!!)
         }
     }
 
@@ -101,37 +88,58 @@ class MainActivity : AppCompatActivity() {
     private fun onClickFun() {
         buttonOK!!.setOnClickListener {
 
-            // Stockage du pseudo et du mdp pour une prochaine connexion
-            val nom: String = pseudo?.text.toString()
-            val mdp: String = motDePasse?.text.toString()
-            sp_editor?.putString("login", nom)
-            sp_editor?.putString("mdp", mdp)
-            sp_editor?.commit()
+            if (internetState!!) {
+                // Gestion de l'authentification à l'API dans une coroutine
+                activityScope.launch {
+                    try {
+                        val nom: String = pseudo?.text.toString()
+                        val mdp: String = motDePasse?.text.toString()
 
-            // Gestion de l'authentification à l'API dans une coroutine
-            activityScope.launch {
-                try {
-                    // En cas de succès, le hash du token d'identification est enregistré dans les SP
-                    // et lancement de l'activité ChoixListActivity
-                    val hash = DataProvider.authentificationFromApi(nom, mdp)
-                    Log.d("MainActivity login", "hash = ${hash}")
-                    sp_editor?.putString("hash", hash)
-                    sp_editor?.commit()
-                    val intentVersChoixListActivity: Intent =
-                        Intent(this@MainActivity, ChoixListActivity::class.java).apply {
-                            putExtra("pseudo", nom)
-                        }
-                    startActivity(intentVersChoixListActivity)
-                } catch (e: Exception) {
-                    // L'échec de l'authentification se traduit pour l'utilisateur pour un Toast d'erreur
-                    Log.d("MainActivity login", "erreur authentification = ${e}")
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Erreur d'authentification",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                        // En cas de succès, le hash du token d'identification est enregistré dans les SP
+                        // et lancement de l'activité ChoixListActivity
+                        val hash = DataProvider.authentificationFromApi(nom, mdp)
+                        Log.d("MainActivity login", "hash = ${hash}")
+                        sp_editor?.putString("hash", hash)
+                        sp_editor?.commit()
+
+                        // Stockage du pseudo et du mdp pour une prochaine connexion
+                        sp_editor?.putString("login", nom)
+                        sp_editor?.putString("mdp", mdp)
+                        sp_editor?.commit()
+
+                        val intentVersChoixListActivity: Intent =
+                            Intent(this@MainActivity, ChoixListActivity::class.java)
+                                .apply { putExtra("internet", true) }
+                        startActivity(intentVersChoixListActivity)
+                    } catch (e: Exception) {
+                        // L'échec de l'authentification se traduit pour l'utilisateur pour un Toast d'erreur
+                        Log.d("MainActivity login", "erreur authentification = ${e}")
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Erreur d'authentification",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
+            } else {
+                // Stockage du pseudoHorsLigne et du mdpHorsLigne pour MAJ BDD
+                val nomHL: String = pseudo?.text.toString()
+                val mdpHL: String = motDePasse?.text.toString()
+                sp_editor?.putString("loginHL", nomHL)
+                sp_editor?.putString("mdpHL", mdpHL)
+                sp_editor?.commit()
+
+                val internetToast: Toast = Toast.makeText(
+                    this,
+                    "Lancement de l'app en mode dégradé",
+                    Toast.LENGTH_LONG
+                )
+                internetToast.show()
+                val intentVersChoixListActivity: Intent =
+                    Intent(this@MainActivity, ChoixListActivity::class.java).apply {
+                        putExtra("internet", false)
+                    }
+                startActivity(intentVersChoixListActivity)
             }
         }
     }
@@ -164,6 +172,30 @@ class MainActivity : AppCompatActivity() {
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
         return isConnected
+    }
+
+    //Fonction informant l'utilisateur du mode d'utilisation de l'app
+    fun appMode(internetState: Boolean) {
+        if (internetState) {
+            buttonOK.text = "OK"
+            tvModeDegrade.isVisible = false
+        } else {
+            buttonOK.text = "Mode dégradé"
+            tvModeDegrade.text = "Avertissement : Pas d'accès à Internet\n\n" +
+                    "Le lancement de l'application se fera en mode dégradé : \n" +
+                    "- l'ajout de nouvelle liste ou de nouvel item est impossible\n " +
+                    "- vos modifications seront enregistrées en local\n\n" +
+                    "Vérifiez la validité de vos identifiants"
+            tvModeDegrade.isVisible = true
+        }
+    }
+
+    fun autoLogin(nom: String, mdp: String, logout: Boolean) {
+        //Connexion automatique
+        if (nom != "login inconnu" && mdp != "mdp inconnu" && logout.not() && internetState!!) {
+            Log.d("connexion auto", "nom : ${nom} + mdp : ${mdp}")
+            buttonOK.performClick()
+        }
     }
 }
 

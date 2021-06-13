@@ -16,46 +16,45 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.data.DataProvider
+import kotlin.properties.Delegates
 
 
 class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
-    // Déclaration variables
-    private val activityScope = CoroutineScope(
-        SupervisorJob() +
-                Dispatchers.Main
-    )
+    // Déclaration des variables
+    private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     var job: Job? = null
-
     var hash: String? = null
-
     private lateinit var listAdapter: ListAdapter
-
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
-
     lateinit var lists: MutableList<ListeToDo>
+    lateinit var btnAddList: Button
+    var internetState: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
 
-        // Gestion des SP
+        // Récupération du hash via les SP
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
-
         hash = sp?.getString("hash", "")
 
-        // on récupère pseudo de l'user via le bundle de l'intent
-        var bundlePseudo = this.intent.extras
-        var pseudo = bundlePseudo?.getString("pseudo")
-        Log.d("ChoixListActivity", "Pseudo de l'user = $pseudo")
+        // Récupération de l'état de la connexion de l'user via le bundle
+        var bundle: Bundle? = this.intent.extras
+        internetState = bundle?.getBoolean("internet")
+        Log.d("ChoixListActivity", "Connecté à internet ? = $internetState")
 
         setupRecyclerView()
         loadAndDisplayLists()
 
         // configuration du bouton ADD pour l'ajout de liste
-        var btnAddList: Button = findViewById(R.id.buttonAddList)
+        btnAddList = findViewById(R.id.buttonAddList)
+
+        //Désactivation potentielle de l'ajout de listes
+        btnAddList.isEnabled = internetState!!
+
         btnAddList.setOnClickListener {
             val etTitre: EditText = findViewById(R.id.editTextNewList)
             val titre = etTitre.text.toString()
@@ -97,6 +96,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
             .apply {
                 putExtra("id", id.toString())
+                putExtra("internet", internetState)
             }
         Log.d("ChoixListActivity", "${intentVersShowListActivity}")
         startActivity(intentVersShowListActivity)
