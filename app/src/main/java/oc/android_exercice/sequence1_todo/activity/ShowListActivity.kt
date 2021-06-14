@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.activity
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,9 +15,13 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
-import oc.android_exercice.sequence1_todo.data.DataProvider
+import oc.android_exercice.sequence1_todo.adapter.ItemAdapter
+import oc.android_exercice.sequence1_todo.data.model.ItemToDo
+import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 
-class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
+class ShowListActivity : AppCompatActivity(),
+    ItemAdapter.ActionListener {
 
     // Déclaration des variables
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -67,7 +71,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
                     try {
                         // ajout de l'item dans la liste
                         var addedItem =
-                            DataProvider.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                            RemoteDataSource.addItemFromApi(hash.toString(), idList!!, toDoTitle)
                         Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
 
@@ -91,7 +95,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
         )
         activityScope.launch {
             try {
-                DataProvider.updateCheckItemFromApi(
+                RemoteDataSource.updateCheckItemFromApi(
                     hash.toString(),
                     idList!!,
                     clickedItem.id.toString(),
@@ -107,7 +111,8 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
     private fun setupRecyclerView() {
         //Initilialisation du recyclerview affichant la liste des items de la todo
         var rvTodoList: RecyclerView = findViewById(R.id.rvTodoList)
-        itemAdapter = ItemAdapter(this)
+        itemAdapter =
+            ItemAdapter(this)
         rvTodoList.adapter = itemAdapter
         rvTodoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
@@ -124,7 +129,7 @@ class ShowListActivity : AppCompatActivity(), ItemAdapter.ActionListener {
             showProgress(true)
             try {
                 // on récupère les items de la liste concernée et on les ajouté à la RecycleView
-                items = DataProvider.getItemsFromApi(hash.toString(), idList.toString())
+                items = RemoteDataSource.getItemsFromApi(hash.toString(), idList.toString())
                 itemAdapter.show(items)
                 Log.d("ShowListActivity", "items = ${items}")
 

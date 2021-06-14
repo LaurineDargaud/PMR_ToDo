@@ -1,6 +1,5 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.activity
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.EditTextPreference
@@ -10,6 +9,7 @@ import android.preference.Preference.OnPreferenceChangeListener
 import android.preference.PreferenceManager
 import android.widget.Button
 import android.widget.Toast
+import oc.android_exercice.sequence1_todo.R
 
 //SettingsActivity hérite de PreferenceActivity
 class SettingsActivity : PreferenceActivity(), OnPreferenceChangeListener {

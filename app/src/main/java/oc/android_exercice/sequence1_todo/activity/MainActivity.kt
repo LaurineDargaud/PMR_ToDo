@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.activity
 
 import android.content.Context
 import android.content.Intent
@@ -16,11 +16,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.coroutines.*
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
-import oc.android_exercice.sequence1_todo.data.DataProvider
-import org.w3c.dom.Text
+import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -97,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
                         // En cas de succès, le hash du token d'identification est enregistré dans les SP
                         // et lancement de l'activité ChoixListActivity
-                        val hash = DataProvider.authentificationFromApi(nom, mdp)
+                        val hash = RemoteDataSource.authentificationFromApi(nom, mdp)
                         Log.d("MainActivity login", "hash = ${hash}")
                         sp_editor?.putString("hash", hash)
                         sp_editor?.commit()

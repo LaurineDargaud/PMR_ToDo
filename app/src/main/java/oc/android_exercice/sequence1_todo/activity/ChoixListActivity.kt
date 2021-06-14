@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.activity
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,11 +15,14 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
-import oc.android_exercice.sequence1_todo.data.DataProvider
-import kotlin.properties.Delegates
+import oc.android_exercice.sequence1_todo.*
+import oc.android_exercice.sequence1_todo.adapter.ListAdapter
+import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
+import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 
 
-class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
+class ChoixListActivity : AppCompatActivity(),
+    ListAdapter.ActionListener {
 
     // Déclaration des variables
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -62,7 +65,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
                 activityScope.launch {
                     try {
                         // on crée une liste de label "titre"
-                        var addedList = DataProvider.addListFromApi(hash.toString(), titre)
+                        var addedList = RemoteDataSource.addListFromApi(hash.toString(), titre)
                         Log.d("ChoixListActivity", "Ajout de la liste $titre")
                         etTitre.text.clear()
                         // on l'ajoute à la recycle view pour l'affichage
@@ -104,7 +107,8 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
 
     private fun setupRecyclerView() {
         val rvListes: RecyclerView = findViewById(R.id.rvListes)
-        listAdapter = ListAdapter(this)
+        listAdapter =
+            ListAdapter(this)
         rvListes.adapter = listAdapter
         rvListes.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
@@ -113,7 +117,7 @@ class ChoixListActivity : AppCompatActivity(), ListAdapter.ActionListener {
         activityScope.launch {
             showProgress(true)
             try {
-                lists = DataProvider.getListsFromApi(hash.toString())
+                lists = RemoteDataSource.getListsFromApi(hash.toString())
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity", "lists = ${lists}")
 

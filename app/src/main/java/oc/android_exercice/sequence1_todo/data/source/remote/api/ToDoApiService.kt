@@ -1,8 +1,8 @@
 package oc.android_exercice.sequence1_todo.data.api
 
 import com.google.gson.annotations.SerializedName
-import oc.android_exercice.sequence1_todo.ItemToDo
-import oc.android_exercice.sequence1_todo.ListeToDo
+import oc.android_exercice.sequence1_todo.data.model.ItemToDo
+import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 import oc.android_exercice.sequence1_todo.data.model.AuthentificationResponse
 import oc.android_exercice.sequence1_todo.data.model.ItemsResponse
 import oc.android_exercice.sequence1_todo.data.model.ListsResponse
