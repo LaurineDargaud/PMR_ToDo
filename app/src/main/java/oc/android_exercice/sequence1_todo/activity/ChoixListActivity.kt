@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.*
 import oc.android_exercice.sequence1_todo.adapter.ListAdapter
+import oc.android_exercice.sequence1_todo.data.ListRepository
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 
@@ -26,7 +27,6 @@ class ChoixListActivity : AppCompatActivity(),
 
     // Déclaration des variables
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    var job: Job? = null
     var hash: String? = null
     private lateinit var listAdapter: ListAdapter
     var sp: SharedPreferences? = null
@@ -34,6 +34,8 @@ class ChoixListActivity : AppCompatActivity(),
     lateinit var lists: MutableList<ListeToDo>
     lateinit var btnAddList: Button
     var internetState: Boolean? = null
+
+    private val listRepository by lazy { ListRepository.newInstance(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +67,7 @@ class ChoixListActivity : AppCompatActivity(),
                 activityScope.launch {
                     try {
                         // on crée une liste de label "titre"
-                        var addedList = RemoteDataSource.addListFromApi(hash.toString(), titre)
+                        var addedList = listRepository.addList(hash.toString(), titre)
                         Log.d("ChoixListActivity", "Ajout de la liste $titre")
                         etTitre.text.clear()
                         // on l'ajoute à la recycle view pour l'affichage
@@ -117,7 +119,7 @@ class ChoixListActivity : AppCompatActivity(),
         activityScope.launch {
             showProgress(true)
             try {
-                lists = RemoteDataSource.getListsFromApi(hash.toString())
+                lists = listRepository.getLists(hash.toString()) as MutableList<ListeToDo>
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity", "lists = ${lists}")
 

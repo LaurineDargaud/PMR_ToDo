@@ -18,6 +18,8 @@ import android.widget.Toast
 import kotlinx.coroutines.*
 import androidx.core.view.isVisible
 import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.AuthentificationRepository
+import oc.android_exercice.sequence1_todo.data.ListRepository
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 import java.lang.Exception
 
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var internetState: Boolean? = null
     private var logout: Boolean? = null
+    // private val authentificationRepository by lazy { AuthentificationRepository.newInstance(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
                         // En cas de succès, le hash du token d'identification est enregistré dans les SP
                         // et lancement de l'activité ChoixListActivity
-                        val hash = RemoteDataSource.authentificationFromApi(nom, mdp)
+                        val hash = RemoteDataSource().authentificationFromApi(nom, mdp)
                         Log.d("MainActivity login", "hash = ${hash}")
                         sp_editor?.putString("hash", hash)
                         sp_editor?.commit()

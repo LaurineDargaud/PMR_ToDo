@@ -9,7 +9,6 @@ import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 @Dao
 interface ListDao {
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveOrUpdate(lists: List<ListeToDo>)
 

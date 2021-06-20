@@ -71,7 +71,7 @@ class ShowListActivity : AppCompatActivity(),
                     try {
                         // ajout de l'item dans la liste
                         var addedItem =
-                            RemoteDataSource.addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                            RemoteDataSource().addItemFromApi(hash.toString(), idList!!, toDoTitle)
                         Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
 
@@ -95,7 +95,7 @@ class ShowListActivity : AppCompatActivity(),
         )
         activityScope.launch {
             try {
-                RemoteDataSource.updateCheckItemFromApi(
+                RemoteDataSource().updateCheckItemFromApi(
                     hash.toString(),
                     idList!!,
                     clickedItem.id.toString(),
@@ -129,7 +129,7 @@ class ShowListActivity : AppCompatActivity(),
             showProgress(true)
             try {
                 // on récupère les items de la liste concernée et on les ajouté à la RecycleView
-                items = RemoteDataSource.getItemsFromApi(hash.toString(), idList.toString())
+                items = RemoteDataSource().getItemsFromApi(hash.toString(), idList.toString())
                 itemAdapter.show(items)
                 Log.d("ShowListActivity", "items = ${items}")
 
