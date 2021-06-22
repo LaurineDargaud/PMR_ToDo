@@ -4,7 +4,7 @@ import android.app.Application
 import oc.android_exercice.sequence1_todo.data.source.local.LocalDataSource
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 
-class AuthentificationRepository (
+class ProfileRepository (
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ){
@@ -12,8 +12,8 @@ class AuthentificationRepository (
         return remoteDataSource.authentificationFromApi(username,password)
     }
     companion object {
-        fun newInstance(application: Application): AuthentificationRepository {
-            return AuthentificationRepository(
+        fun newInstance(application: Application): ProfileRepository {
+            return ProfileRepository(
                 localDataSource = LocalDataSource(application),
                 remoteDataSource = RemoteDataSource()
             )

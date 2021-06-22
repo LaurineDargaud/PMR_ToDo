@@ -11,5 +11,6 @@ import oc.android_exercice.sequence1_todo.data.model.ListeToDo
     version = 1
 )
 abstract class ToDoRoomDatabase : RoomDatabase() {
+    abstract fun profileDao(): ProfileDao
     abstract fun listDao(): ListDao
 }

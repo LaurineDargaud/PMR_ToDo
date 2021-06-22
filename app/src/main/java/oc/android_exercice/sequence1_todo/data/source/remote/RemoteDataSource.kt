@@ -61,8 +61,10 @@ class RemoteDataSource {
     private fun List<ListResponse>.toLists() = this.map { listResponse ->
         ListeToDo(
             id = listResponse.id,
-            titreListeToDo = listResponse.titreListeToDo,
-            items = listResponse.items
+            titreListeToDo = listResponse.titreListeToDo
+            // items = listResponse.items
         )
     }
+
+    
 }
