@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-class ItemToDo(
+data class ItemToDo(
     @PrimaryKey
     var id: Int,
     var description: String = "Nouvel Item",

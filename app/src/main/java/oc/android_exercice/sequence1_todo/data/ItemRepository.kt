@@ -41,6 +41,7 @@ class ItemRepository(
 
         } catch (e: Exception) {
             // on ajoute l'édit dans la table des edits
+            localDataSource.addLocalItemCheckUpdate(idList,clickedItem)
         }
     }
 

@@ -18,8 +18,8 @@ import android.widget.Toast
 import kotlinx.coroutines.*
 import androidx.core.view.isVisible
 import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.ModifItemRepository
 import oc.android_exercice.sequence1_todo.data.ProfileRepository
-import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +34,9 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var internetState: Boolean? = null
     private var logout: Boolean? = null
+
     private val profileRepository by lazy { ProfileRepository.newInstance(application) }
+    private val modifItemRepository by lazy { ModifItemRepository.newInstance(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +67,21 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // Récupération de l'état de la connexion à Internet
-        internetState = isConnectedToInternet()
+        try{
+            internetState = isConnectedToInternet()
+        } catch(e:Exception){
+            Log.d("Main error","error = {$e}")
+        }
 
         // Appel de appMode, fonctionnant modifiant l'UI pour signifier à l'utilisateur le mode d'utilisation de l'app
         appMode(internetState!!)
+
+        // Si on est connecté, on push les edits locales vers la base à distance par API
+        if (internetState!!){
+            activityScope.launch {
+                modifItemRepository.pushModifItem()
+            }
+        }
 
         //Pré-remplissage des champs pseudo et mot de passe (si on ne cherche pas à faire une déconnexion)
         val nom: String? = sp?.getString("login", "login inconnu")
