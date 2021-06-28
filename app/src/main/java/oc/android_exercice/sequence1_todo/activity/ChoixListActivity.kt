@@ -28,6 +28,7 @@ class ChoixListActivity : AppCompatActivity(),
     // Déclaration des variables
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     var hash: String? = null
+    var strIdUser: String? = null
     private lateinit var listAdapter: ListAdapter
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
@@ -45,6 +46,7 @@ class ChoixListActivity : AppCompatActivity(),
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
         hash = sp?.getString("hash", "")
+        strIdUser = sp?.getString("idUser","")
 
         // Récupération de l'état de la connexion de l'user via le bundle
         var bundle: Bundle? = this.intent.extras
@@ -119,7 +121,7 @@ class ChoixListActivity : AppCompatActivity(),
         activityScope.launch {
             showProgress(true)
             try {
-                lists = listRepository.getLists(hash.toString()) as MutableList<ListeToDo>
+                lists = listRepository.getLists(hash.toString(), strIdUser.toString()) as MutableList<ListeToDo>
                 listAdapter.show(lists)
                 Log.d("ChoixListActivity", "lists = ${lists}")
 

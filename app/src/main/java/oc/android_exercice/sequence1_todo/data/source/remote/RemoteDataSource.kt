@@ -62,9 +62,8 @@ class RemoteDataSource {
         ListeToDo(
             id = listResponse.id,
             titreListeToDo = listResponse.titreListeToDo
-            // items = listResponse.items
         )
     }
 
-    
+
 }

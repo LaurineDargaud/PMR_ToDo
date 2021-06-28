@@ -11,15 +11,16 @@ class ListRepository (
     private val remoteDataSource: RemoteDataSource
     ) {
 
-        suspend fun getLists( hash: String = "" ): List<ListeToDo> {
+        suspend fun getLists( hash: String, idUser:String): List<ListeToDo> {
             return try {
-
-                remoteDataSource.getListsFromApi(hash).also {
-                    localDataSource.saveOrUpdate(it)
+                val lists = remoteDataSource.getListsFromApi(hash)
+                lists.map{
+                    it.idUser = idUser.toInt()
                 }
-
+                localDataSource.saveOrUpdate(lists)
+                lists
             } catch (e: Exception) {
-                localDataSource.getLists()
+                localDataSource.getLists(idUser)
             }
         }
 

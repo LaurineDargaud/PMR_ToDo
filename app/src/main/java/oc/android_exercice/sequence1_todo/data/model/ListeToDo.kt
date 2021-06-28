@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName
 data class ListeToDo(
     @PrimaryKey
     val id : Int,
-    val titreListeToDo : String
+    val titreListeToDo : String,
+    var idUser: Int? = null
     // val items : MutableList<ItemToDo> = mutableListOf<ItemToDo>()
 )
