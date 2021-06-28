@@ -2,6 +2,7 @@ package oc.android_exercice.sequence1_todo.data.source.remote
 
 import oc.android_exercice.sequence1_todo.data.model.ItemToDo
 import oc.android_exercice.sequence1_todo.data.model.ListeToDo
+import oc.android_exercice.sequence1_todo.data.source.remote.api.ItemResponse
 import oc.android_exercice.sequence1_todo.data.source.remote.api.ListResponse
 import oc.android_exercice.sequence1_todo.data.source.remote.api.ToDoApiService
 import retrofit2.Retrofit
@@ -35,7 +36,7 @@ class RemoteDataSource {
     }
 
     suspend fun getItemsFromApi(hash: String, idList: String): MutableList<ItemToDo> {
-        return service.getItems(idList, hash).items.toMutableList()
+        return service.getItems(idList, hash).items.toItems().toMutableList()
     }
 
     suspend fun updateCheckItemFromApi(
@@ -62,6 +63,14 @@ class RemoteDataSource {
         ListeToDo(
             id = listResponse.id,
             titreListeToDo = listResponse.titreListeToDo
+        )
+    }
+
+    private fun List<ItemResponse>.toItems() = this.map { itemResponse ->
+        ItemToDo(
+            id = itemResponse.id,
+            description = itemResponse.description,
+            fait_intValue = itemResponse.fait_intValue
         )
     }
 

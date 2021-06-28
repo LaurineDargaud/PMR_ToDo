@@ -18,6 +18,8 @@ import kotlinx.coroutines.*
 import oc.android_exercice.sequence1_todo.adapter.ItemAdapter
 import oc.android_exercice.sequence1_todo.data.model.ItemToDo
 import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.ItemRepository
+import oc.android_exercice.sequence1_todo.data.ListRepository
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 
 class ShowListActivity : AppCompatActivity(),
@@ -27,6 +29,7 @@ class ShowListActivity : AppCompatActivity(),
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     var hash: String? = null
     var idList: String? = null
+    var idUser: String? = null
     lateinit var clickedItem: ItemToDo
     private lateinit var itemAdapter: ItemAdapter
     var sp: SharedPreferences? = null
@@ -34,6 +37,8 @@ class ShowListActivity : AppCompatActivity(),
     lateinit var items: MutableList<ItemToDo>
     lateinit var btnAddToDoItem: Button
     var internetState: Boolean? = null
+
+    private val itemRepository by lazy { ItemRepository.newInstance(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,7 @@ class ShowListActivity : AppCompatActivity(),
         var bundle = this.intent.extras
         Log.d("ShowListActivity", "Bundle transmis ${bundle}")
         idList = bundle?.getString("id")
+        idUser = bundle?.getString("idUser")
         Log.d("ShowListActivity", "idList = $idList")
 
         // Récupération de l'état de la connexion de l'user via le bundle
@@ -129,7 +135,7 @@ class ShowListActivity : AppCompatActivity(),
             showProgress(true)
             try {
                 // on récupère les items de la liste concernée et on les ajouté à la RecycleView
-                items = RemoteDataSource().getItemsFromApi(hash.toString(), idList.toString())
+                items = itemRepository.getItems(hash.toString(), idList.toString()).toMutableList()
                 itemAdapter.show(items)
                 Log.d("ShowListActivity", "items = ${items}")
 
