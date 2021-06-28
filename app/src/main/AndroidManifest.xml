@@ -14,10 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sequence1_ToDo">
         <activity
-            android:name=".ChoixListActivity"
+            android:name=".activity.ChoixListActivity"
             android:label="ChoixListActivity"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,9 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".activity.SettingsActivity" />
         <activity
-            android:name=".ShowListActivity"
+            android:name=".activity.ShowListActivity"
             android:label="ShowListActivity" />
     </application>
 

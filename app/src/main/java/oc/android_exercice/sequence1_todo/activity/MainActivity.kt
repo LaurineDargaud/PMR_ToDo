@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.activity
 
 import android.content.Context
 import android.content.Intent
@@ -16,11 +16,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.coroutines.*
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
-import oc.android_exercice.sequence1_todo.data.DataProvider
-import org.w3c.dom.Text
+import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.ProfileRepository
+import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var internetState: Boolean? = null
     private var logout: Boolean? = null
+    private val profileRepository by lazy { ProfileRepository.newInstance(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,23 +88,30 @@ class MainActivity : AppCompatActivity() {
     private fun onClickFun() {
         buttonOK!!.setOnClickListener {
 
-            if (internetState!!) {
+            activityScope.launch {
                 // Gestion de l'authentification à l'API dans une coroutine
-                activityScope.launch {
+                if (internetState!!) {
                     try {
                         val nom: String = pseudo?.text.toString()
                         val mdp: String = motDePasse?.text.toString()
 
                         // En cas de succès, le hash du token d'identification est enregistré dans les SP
                         // et lancement de l'activité ChoixListActivity
-                        val hash = DataProvider.authentificationFromApi(nom, mdp)
+                        val hash = profileRepository.authenticate(nom, mdp)
                         Log.d("MainActivity login", "hash = ${hash}")
                         sp_editor?.putString("hash", hash)
                         sp_editor?.commit()
 
+                        // On ajoute l'utilisateur dans la BDD locale s'il n'y est pas
+                        profileRepository.addProfileToLocal(nom, mdp)
+
+                        // Récupération de l'idUser
+                        val strIdUser = profileRepository.getIdUser(nom,mdp)
+
                         // Stockage du pseudo et du mdp pour une prochaine connexion
                         sp_editor?.putString("login", nom)
                         sp_editor?.putString("mdp", mdp)
+                        sp_editor?.putString("idUser", strIdUser)
                         sp_editor?.commit()
 
                         val intentVersChoixListActivity: Intent =
@@ -121,25 +128,47 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-            } else {
-                // Stockage du pseudoHorsLigne et du mdpHorsLigne pour MAJ BDD
-                val nomHL: String = pseudo?.text.toString()
-                val mdpHL: String = motDePasse?.text.toString()
-                sp_editor?.putString("loginHL", nomHL)
-                sp_editor?.putString("mdpHL", mdpHL)
-                sp_editor?.commit()
+                else {
+                    try{
+                        val nomHL: String = pseudo?.text.toString()
+                        val mdpHL: String = motDePasse?.text.toString()
+                        // Vérification authentification
+                        val strIdUser = profileRepository.authenticate(nomHL,mdpHL)
+                        if (strIdUser==null){
+                            // authentification ratée
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Erreur d'authentification",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else{
+                            // authentification réussie
 
-                val internetToast: Toast = Toast.makeText(
-                    this,
-                    "Lancement de l'app en mode dégradé",
-                    Toast.LENGTH_LONG
-                )
-                internetToast.show()
-                val intentVersChoixListActivity: Intent =
-                    Intent(this@MainActivity, ChoixListActivity::class.java).apply {
-                        putExtra("internet", false)
+                            // Stockage du pseudoHorsLigne et du mdpHorsLigne pour MAJ BDD quand on revient
+                            // en ligne, après modifs en local
+
+                            sp_editor?.putString("loginHL", nomHL)
+                            sp_editor?.putString("mdpHL", mdpHL)
+                            sp_editor?.putString("idUser",strIdUser)
+                            sp_editor?.commit()
+
+                            val internetToast: Toast = Toast.makeText(
+                                this@MainActivity,
+                                "Lancement de l'app en mode dégradé",
+                                Toast.LENGTH_LONG
+                            )
+                            internetToast.show()
+                            val intentVersChoixListActivity: Intent =
+                                Intent(this@MainActivity, ChoixListActivity::class.java).apply {
+                                    putExtra("internet", false)
+                                }
+                            startActivity(intentVersChoixListActivity)
+                        }
+                    } catch (e:Exception){
+                        Log.d("Main","Erreur = {$e}")
                     }
-                startActivity(intentVersChoixListActivity)
+                }
             }
         }
     }

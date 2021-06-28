@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import oc.android_exercice.sequence1_todo.data.model.ListeToDo
+import oc.android_exercice.sequence1_todo.R
 
 class ListAdapter(
     private val actionListener: ActionListener,

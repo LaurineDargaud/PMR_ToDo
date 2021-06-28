@@ -1,4 +1,4 @@
-package oc.android_exercice.sequence1_todo
+package oc.android_exercice.sequence1_todo.data.model
 
 import com.google.gson.annotations.SerializedName
 
