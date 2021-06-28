@@ -26,6 +26,11 @@ class ItemAdapter(
         notifyDataSetChanged()
     }
 
+    fun add(item:ItemToDo){
+        items.add(item)
+        notifyItemInserted(items.size-1)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         Log.d("ItemAdapter", "onCreateViewHolder")
         return ItemViewHolder(
