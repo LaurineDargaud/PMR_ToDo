@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import oc.android_exercice.sequence1_todo.data.model.ItemToDo
 import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 import oc.android_exercice.sequence1_todo.data.model.ProfilListeToDo
 import oc.android_exercice.sequence1_todo.data.source.local.database.ToDoRoomDatabase
@@ -31,7 +32,13 @@ class LocalDataSource(application: Application) {
     private val listDao = roomDatabase.listDao()
 
     suspend fun getLists(idUser:String) = listDao.getLists(idUser)
-    suspend fun saveOrUpdate(lists: List<ListeToDo>) = listDao.saveOrUpdate(lists)
+    suspend fun saveOrUpdateLists(lists: List<ListeToDo>) = listDao.saveOrUpdate(lists)
+
+    // ItemToDo
+    private val itemDao = roomDatabase.itemDao()
+
+    suspend fun getItems(idList:String) = itemDao.getItems(idList)
+    suspend fun saveOrUpdateItems(items: List<ItemToDo>) = itemDao.saveOrUpdate(items)
 
 
 

@@ -1,7 +1,6 @@
 package oc.android_exercice.sequence1_todo.data
 
 import android.app.Application
-import android.util.Log
 import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 import oc.android_exercice.sequence1_todo.data.source.local.LocalDataSource
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
@@ -17,7 +16,7 @@ class ListRepository (
                 lists.map{
                     it.idUser = idUser.toInt()
                 }
-                localDataSource.saveOrUpdate(lists)
+                localDataSource.saveOrUpdateLists(lists)
                 lists
             } catch (e: Exception) {
                 localDataSource.getLists(idUser)

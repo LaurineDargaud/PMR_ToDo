@@ -103,6 +103,7 @@ class ChoixListActivity : AppCompatActivity(),
         val intentVersShowListActivity: Intent = Intent(this, ShowListActivity::class.java)
             .apply {
                 putExtra("id", id.toString())
+                putExtra("idUser",strIdUser)
                 putExtra("internet", internetState)
             }
         Log.d("ChoixListActivity", "${intentVersShowListActivity}")

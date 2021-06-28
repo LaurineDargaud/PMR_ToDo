@@ -38,7 +38,7 @@ interface ToDoApiService {
         @Header("hash") hash: String
     )
 
-    data class ItemResponse(@SerializedName("item") val item: ItemToDo)
+    data class ItemResponseApi(@SerializedName("item") val item: ItemToDo)
 
     // Requête pour ajouter un item à une liste
     @FormUrlEncoded
@@ -47,9 +47,9 @@ interface ToDoApiService {
         @Path("idList") idList: String,
         @Field("label") label: String,
         @Header("hash") hash: String
-    ): ItemResponse
+    ): ItemResponseApi
 
-    data class ListResponse(@SerializedName("list") val list: ListeToDo)
+    data class ListResponseApi(@SerializedName("list") val list: ListeToDo)
 
     // Requête pour ajouter une liste
     @FormUrlEncoded
@@ -57,5 +57,5 @@ interface ToDoApiService {
     suspend fun addList(
         @Field("label") label: String,
         @Header("hash") hash: String
-    ): ListResponse
+    ): ListResponseApi
 }

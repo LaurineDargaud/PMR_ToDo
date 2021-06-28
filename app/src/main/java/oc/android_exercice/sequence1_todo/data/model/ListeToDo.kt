@@ -12,5 +12,4 @@ data class ListeToDo(
     val id : Int,
     val titreListeToDo : String,
     var idUser: Int? = null
-    // val items : MutableList<ItemToDo> = mutableListOf<ItemToDo>()
 )
