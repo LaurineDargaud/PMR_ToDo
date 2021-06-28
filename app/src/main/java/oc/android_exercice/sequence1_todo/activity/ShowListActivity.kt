@@ -78,12 +78,16 @@ class ShowListActivity : AppCompatActivity(),
                         // ajout de l'item dans la liste
                         var addedItem =
                             RemoteDataSource().addItemFromApi(hash.toString(), idList!!, toDoTitle)
+                        addedItem.description = toDoTitle
+                        addedItem.idList = idList!!.toInt()
                         Log.d("ShowListActivity", "Ajout de l'item' $toDoTitle")
                         toDoDescription.text.clear()
 
                         // ajouter item à la recycle view pour l'affichage
                         items.add(addedItem)
-                        itemAdapter.update(items)
+                        itemAdapter.add(addedItem)
+
+                        Log.d("ShowListActivity","addedItem = {$addedItem}")
                     } catch (e: Exception) {
                         Log.d("ShowListActivity", "Erreur à l'ajout d'item : ${e}")
                     }

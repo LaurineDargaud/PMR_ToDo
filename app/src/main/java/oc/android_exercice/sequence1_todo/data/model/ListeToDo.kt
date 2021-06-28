@@ -10,6 +10,6 @@ import com.google.gson.annotations.SerializedName
 data class ListeToDo(
     @PrimaryKey
     val id : Int,
-    val titreListeToDo : String,
+    var titreListeToDo : String,
     var idUser: Int? = null
 )
