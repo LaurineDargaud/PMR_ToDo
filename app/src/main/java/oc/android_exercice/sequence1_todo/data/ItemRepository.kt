@@ -1,6 +1,7 @@
 package oc.android_exercice.sequence1_todo.data
 
 import android.app.Application
+import android.util.Log
 import oc.android_exercice.sequence1_todo.data.model.ItemToDo
 import oc.android_exercice.sequence1_todo.data.source.local.LocalDataSource
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
@@ -19,6 +20,27 @@ class ItemRepository(
             items
         } catch (e: Exception) {
             localDataSource.getItems(idList)
+        }
+    }
+
+    suspend fun updateCheckItem(
+        hash: String,
+        idList: String,
+        clickedItem : ItemToDo
+    ) {
+        // dans tous les cas, on màj la base locale
+        localDataSource.updateCheckItem(clickedItem)
+        try{
+            // on met à jour par appel API
+            remoteDataSource.updateCheckItemFromApi(
+                hash,
+                idList,
+                clickedItem.id.toString(),
+                clickedItem.fait_intValue.toString()
+            )
+
+        } catch (e: Exception) {
+            // on ajoute l'édit dans la table des edits
         }
     }
 

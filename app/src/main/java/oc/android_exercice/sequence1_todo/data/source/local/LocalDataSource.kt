@@ -39,7 +39,7 @@ class LocalDataSource(application: Application) {
 
     suspend fun getItems(idList:String) = itemDao.getItems(idList)
     suspend fun saveOrUpdateItems(items: List<ItemToDo>) = itemDao.saveOrUpdate(items)
-
+    suspend fun updateCheckItem(item:ItemToDo) = itemDao.updateCheckItem(item)
 
 
 }

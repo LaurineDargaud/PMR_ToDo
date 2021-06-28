@@ -101,13 +101,12 @@ class ShowListActivity : AppCompatActivity(),
         )
         activityScope.launch {
             try {
-                RemoteDataSource().updateCheckItemFromApi(
+                clickedItem.changeFait()
+                itemRepository.updateCheckItem(
                     hash.toString(),
                     idList!!,
-                    clickedItem.id.toString(),
-                    clickedItem.fait_intValue.toString()
+                    clickedItem
                 )
-                clickedItem.changeFait()
             } catch (e: Exception) {
                 Log.e("ShowListActivity", "Erreur de changement d'état d'item : ${e}")
             }

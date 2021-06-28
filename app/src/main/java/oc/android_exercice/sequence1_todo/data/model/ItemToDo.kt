@@ -9,7 +9,6 @@ class ItemToDo(
     var id: Int,
     var description: String = "Nouvel Item",
     var fait_intValue: Int = 0,
-    // var idUser: Int? = null,
     var idList: Int? = null
 ) {
 
@@ -19,4 +18,9 @@ class ItemToDo(
     fun changeFait() {
         fait_intValue = if (fait_intValue == 0) 1 else 0
     }
+
+    override fun toString():String{
+        return "ItemToDo($id, $description, $fait_intValue, $idList)"
+    }
+
 }
