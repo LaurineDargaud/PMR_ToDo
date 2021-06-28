@@ -14,4 +14,7 @@ interface ModifItemDao {
 
     @Query("SELECT * FROM ModifItem")
     suspend fun getAll():List<ModifItem>
+
+    @Query("DELETE FROM ModifItem")
+    suspend fun deleteAll()
 }

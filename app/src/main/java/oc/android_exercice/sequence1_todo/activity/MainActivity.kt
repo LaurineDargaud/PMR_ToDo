@@ -76,13 +76,6 @@ class MainActivity : AppCompatActivity() {
         // Appel de appMode, fonctionnant modifiant l'UI pour signifier à l'utilisateur le mode d'utilisation de l'app
         appMode(internetState!!)
 
-        // Si on est connecté, on push les edits locales vers la base à distance par API
-        if (internetState!!){
-            activityScope.launch {
-                modifItemRepository.pushModifItem()
-            }
-        }
-
         //Pré-remplissage des champs pseudo et mot de passe (si on ne cherche pas à faire une déconnexion)
         val nom: String? = sp?.getString("login", "login inconnu")
         val mdp: String? = sp?.getString("mdp", "mdp inconnu")
@@ -114,6 +107,13 @@ class MainActivity : AppCompatActivity() {
                         Log.d("MainActivity login", "hash = ${hash}")
                         sp_editor?.putString("hash", hash)
                         sp_editor?.commit()
+
+                        // Si on est connecté, on push les edits locales vers la base à distance par API
+                        if (internetState!!){
+                            activityScope.launch {
+                                modifItemRepository.pushModifItem(hash)
+                            }
+                        }
 
                         // On ajoute l'utilisateur dans la BDD locale s'il n'y est pas
                         profileRepository.addProfileToLocal(nom, mdp)
@@ -161,8 +161,8 @@ class MainActivity : AppCompatActivity() {
                             // Stockage du pseudoHorsLigne et du mdpHorsLigne pour MAJ BDD quand on revient
                             // en ligne, après modifs en local
 
-                            sp_editor?.putString("loginHL", nomHL)
-                            sp_editor?.putString("mdpHL", mdpHL)
+                            // sp_editor?.putString("loginHL", nomHL)
+                            // sp_editor?.putString("mdpHL", mdpHL)
                             sp_editor?.putString("idUser",strIdUser)
                             sp_editor?.commit()
 

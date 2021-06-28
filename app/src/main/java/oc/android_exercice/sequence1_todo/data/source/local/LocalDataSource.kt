@@ -50,6 +50,8 @@ class LocalDataSource(application: Application) {
     )
     suspend fun getAllModifItem() = modifItemDao.getAll()
 
+    suspend fun deleteAllModifItem() = modifItemDao.deleteAll()
+
 
 
 

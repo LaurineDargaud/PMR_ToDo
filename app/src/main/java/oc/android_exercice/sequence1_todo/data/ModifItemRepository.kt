@@ -9,9 +9,13 @@ class ModifItemRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) {
-    suspend fun pushModifItem(){
+    suspend fun pushModifItem(hash:String){
         var modifs = localDataSource.getAllModifItem()
         Log.d("ModifItemRepo","modifs = {$modifs}")
+        for (modif in modifs){
+            remoteDataSource.updateCheckItemFromApi(hash, modif.idList.toString(), modif.idItem.toString(), modif.newCheckValue.toString())
+        }
+        localDataSource.deleteAllModifItem()
     }
 
     companion object {
