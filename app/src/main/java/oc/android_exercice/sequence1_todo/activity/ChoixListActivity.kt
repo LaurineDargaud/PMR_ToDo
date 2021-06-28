@@ -70,11 +70,15 @@ class ChoixListActivity : AppCompatActivity(),
                     try {
                         // on crée une liste de label "titre"
                         var addedList = listRepository.addList(hash.toString(), titre)
-                        Log.d("ChoixListActivity", "Ajout de la liste $titre")
                         etTitre.text.clear()
+                        addedList.titreListeToDo = titre
+                        addedList.idUser = strIdUser!!.toInt()
+
+                        Log.d("ChoixListActivity", "Ajout de la liste {$addedList}")
+
                         // on l'ajoute à la recycle view pour l'affichage
                         lists.add(addedList)
-                        listAdapter.update(lists)
+                        listAdapter.add(addedList)
 
                     } catch (e: Exception) {
                         Log.d("ChoixListActivity", "Erreur à l'ajout de liste  = ${e}")

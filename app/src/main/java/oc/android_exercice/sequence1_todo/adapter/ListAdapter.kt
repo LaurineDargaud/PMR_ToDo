@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import oc.android_exercice.sequence1_todo.data.model.ListeToDo
 import oc.android_exercice.sequence1_todo.R
+import oc.android_exercice.sequence1_todo.data.model.ItemToDo
 
 class ListAdapter(
     private val actionListener: ActionListener,
@@ -19,10 +20,11 @@ class ListAdapter(
         notifyDataSetChanged()
     }
 
-    fun update(listsToShow: MutableList<ListeToDo>) {
-        this.listes = listsToShow
-        notifyDataSetChanged()
+    fun add(list: ListeToDo){
+        listes.add(list)
+        notifyItemInserted(listes.size-1)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         Log.d("ListAdapter", "onCreateViewHolder")
