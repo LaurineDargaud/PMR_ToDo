@@ -45,8 +45,7 @@ class RemoteDataSource {
         idItem: String,
         fait_intValue: String
     ) {
-        var newFaitIntValue: String = if (fait_intValue == "1") "0" else "1"
-        return service.updateCheckItem(idList, idItem, newFaitIntValue, hash)
+        return service.updateCheckItem(idList, idItem, fait_intValue, hash)
     }
 
     // No local mode
