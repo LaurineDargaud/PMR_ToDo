@@ -29,9 +29,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvModeDegrade: TextView
     private var pseudo: EditText? = null
     private var motDePasse: EditText? = null
+
     var sp: SharedPreferences? = null
     private var sp_editor: SharedPreferences.Editor? = null
+
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     private var internetState: Boolean? = null
     private var logout: Boolean? = null
 
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Gestion des SP
+        // Gestion des Shared Preferences
         sp = PreferenceManager.getDefaultSharedPreferences(this)
         sp_editor = sp?.edit()
 
@@ -54,10 +57,9 @@ class MainActivity : AppCompatActivity() {
 
         // On utilise un bundle pour détecter les déconnexions depuis les activités ChoixList et ShowList
         var bundle = this.intent.extras
-        Log.d("bundle Main", "bundle : ${bundle}")
         logout =
             bundle?.getBoolean("logout") == true //test permettant de ne pas avoir de nullPointerException au démarrage
-        Log.d("connexion auto", "logout state = $logout")
+        Log.d("Main : logout", "logout state = $logout")
 
         //Appel à la méthode gérant les clicks sur le buttonOK
         onClickFun()
@@ -67,11 +69,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // Récupération de l'état de la connexion à Internet
-        try{
-            internetState = isConnectedToInternet()
-        } catch(e:Exception){
-            Log.d("Main error","error = {$e}")
-        }
+        internetState = isConnectedToInternet()
 
         // Appel de appMode, fonctionnant modifiant l'UI pour signifier à l'utilisateur le mode d'utilisation de l'app
         appMode(internetState!!)
@@ -86,40 +84,44 @@ class MainActivity : AppCompatActivity() {
 
         //Appel de la méthode gérant la connexion automatique
         if (nom != null && mdp != null) {
-            autoLogin(nom, mdp, logout!!)
+            autoLogin(nom, mdp, logout!!, internetState!!)
         }
     }
 
-    //Méthode gérant le clic sur le bouton OK (authentification + enregistrement des identifiants dans les SP)
+    // Méthode gérant le clic sur le bouton de connexion
+    // Bouton OK ou MODE DEGRADE selon l'état de connexion à Internet
+    // Mode en ligne : authentification + enregistrement des identifiants dans les SP
+    // Mode en ligne : mise à jour de la BDD distante à partir de modifications stockées dans la table ModifsItem
+    // Mode en ligne : ajout du profil utilisateur (nom, mdp, idUser) à la table Users de la BDD locale pour permettre la connexion locale future
+    // Mode dégradé : authentification en se basant sur la table Users de la BDD locale
     private fun onClickFun() {
         buttonOK!!.setOnClickListener {
 
+            // Gestion des appels API et SQL Lite dans une coroutine
             activityScope.launch {
-                // Gestion de l'authentification à l'API dans une coroutine
+
+                // Cas où l'app est connectée à Internet
                 if (internetState!!) {
                     try {
+                        // On essaye de se connecter au profil de l'utilisateur par un appel API à partir des champs qu'il a complétés
                         val nom: String = pseudo?.text.toString()
                         val mdp: String = motDePasse?.text.toString()
+                        val hash = profileRepository.authenticate(nom, mdp, internetState!!)
+                        Log.d("Main : hash", "hash = ${hash}")
 
                         // En cas de succès, le hash du token d'identification est enregistré dans les SP
-                        // et lancement de l'activité ChoixListActivity
-                        val hash = profileRepository.authenticate(nom, mdp)
-                        Log.d("MainActivity login", "hash = ${hash}")
                         sp_editor?.putString("hash", hash)
                         sp_editor?.commit()
 
-                        // Si on est connecté, on push les edits locales vers la base à distance par API
-                        if (internetState!!){
-                            activityScope.launch {
-                                modifItemRepository.pushModifItem(hash)
-                            }
-                        }
+                        // L'app étant connectée à Internet (à nouveau), on met à jour la base de données distante par appels API
+                        // en pushant les edits effectués en local
+                        modifItemRepository.pushModifItem(hash)
 
-                        // On ajoute l'utilisateur dans la BDD locale s'il n'y est pas
+                        // Ajout de l'utilisateur dans la BDD locale s'il n'y est pas
                         profileRepository.addProfileToLocal(nom, mdp)
 
-                        // Récupération de l'idUser
-                        val strIdUser = profileRepository.getIdUser(nom,mdp)
+                        // Récupération de l'idUser, nécessaire pour le stockage en local
+                        val strIdUser = profileRepository.getIdUser(nom, mdp)
 
                         // Stockage du pseudo et du mdp pour une prochaine connexion
                         sp_editor?.putString("login", nom)
@@ -127,43 +129,37 @@ class MainActivity : AppCompatActivity() {
                         sp_editor?.putString("idUser", strIdUser)
                         sp_editor?.commit()
 
+                        // Lancement de l'activité ChoixListActivity
                         val intentVersChoixListActivity: Intent =
                             Intent(this@MainActivity, ChoixListActivity::class.java)
                                 .apply { putExtra("internet", true) }
                         startActivity(intentVersChoixListActivity)
                     } catch (e: Exception) {
-                        // L'échec de l'authentification se traduit pour l'utilisateur pour un Toast d'erreur
+                        // L'échec de l'authentification en ligne se traduit pour l'utilisateur pour un Toast d'erreur
                         Log.d("MainActivity login", "erreur authentification = ${e}")
                         Toast.makeText(
                             this@MainActivity,
-                            "Erreur d'authentification",
+                            "Erreur d'authentification. Merci de vérifier vos identifiants.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
-                else {
-                    try{
+                } else {
+                    // Cas où l'app n'est pas connectée à Internet
+                    try {
+                        // Tentative d'authentification en local, grâce à la table Users de la BDD locale
                         val nomHL: String = pseudo?.text.toString()
                         val mdpHL: String = motDePasse?.text.toString()
-                        // Vérification authentification
-                        val strIdUser = profileRepository.authenticate(nomHL,mdpHL)
-                        if (strIdUser==null){
-                            // authentification ratée
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Erreur d'authentification",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        else{
+                        val strIdUser =
+                            profileRepository.authenticate(nomHL, mdpHL, internetState!!)
+                        Log.d("zzzzz : IdUSer", strIdUser)
+                        if (strIdUser !== "null") {
                             // authentification réussie
-
-                            // Stockage du pseudoHorsLigne et du mdpHorsLigne pour MAJ BDD quand on revient
-                            // en ligne, après modifs en local
+                            // Stockage du pseudoHorsLigne et du mdpHorsLigne pour mettre à jour la BDD distante,
+                            // une fois la connexion à Internet restaurée
 
                             // sp_editor?.putString("loginHL", nomHL)
                             // sp_editor?.putString("mdpHL", mdpHL)
-                            sp_editor?.putString("idUser",strIdUser)
+                            sp_editor?.putString("idUser", strIdUser)
                             sp_editor?.commit()
 
                             val internetToast: Toast = Toast.makeText(
@@ -178,15 +174,26 @@ class MainActivity : AppCompatActivity() {
                                 }
                             startActivity(intentVersChoixListActivity)
                         }
-                    } catch (e:Exception){
-                        Log.d("Main","Erreur = {$e}")
+                        else {
+                            //Si l'idUser est null, les pseudo et mdp renseignés ne correspondent pas à un profil
+                            // authentification ratée
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Erreur d'authentification",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+
+                    } catch (e: Exception) {
+                        Log.d("Main", "Erreur = {$e}")
                     }
                 }
             }
         }
     }
 
-    // Fonction affichant le menu ActionBar (si la méthode renvoie vrai)
+    // Fonction affichant le menu ActionBar
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         //Instruction pour cacher l'item déconnexion de la MainActivity (l'id de l'item est 1, l'id 0 est pour l'item "Préférences")
@@ -209,6 +216,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Fonction testant la connexion à Internet.
+    // Elle renvoie true si l'app a accès à Internet et false sinon
     fun isConnectedToInternet(): Boolean {
         val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
@@ -216,7 +224,9 @@ class MainActivity : AppCompatActivity() {
         return isConnected
     }
 
-    //Fonction informant l'utilisateur du mode d'utilisation de l'app
+    // Fonction informant l'utilisateur du mode d'utilisation de l'app par des modifications de l'UI
+    // Le bouton OK se transforme en bouton Mode dégradé en offline
+    // Un avertissement est affiché à l'écran dans un TextView en offline
     fun appMode(internetState: Boolean) {
         if (internetState) {
             buttonOK.text = "OK"
@@ -226,14 +236,17 @@ class MainActivity : AppCompatActivity() {
             tvModeDegrade.text = "Avertissement : Pas d'accès à Internet\n\n" +
                     "Le lancement de l'application se fera en mode dégradé : \n" +
                     "- l'ajout de nouvelle liste ou de nouvel item est impossible\n " +
-                    "- vos modifications seront enregistrées en local\n\n" +
-                    "Vérifiez la validité de vos identifiants"
+                    "- vos modifications seront enregistrées en local\n\n"
             tvModeDegrade.isVisible = true
         }
     }
 
-    fun autoLogin(nom: String, mdp: String, logout: Boolean) {
-        //Connexion automatique
+    // Méthode permettant l'automatisation de la connexion de l'utilisateur à son compte sous certaines conditions
+    // Si les champs nom et mdp ne contiennent pas "login inconnu" et "mdp inconnu", autrement dit si les SP ont leur valeur par défaut,
+    // ie aucune connexion n'a déjà eu lieu
+    // Si logout = false, ie on ne demande pas une déconnexion *
+    // Si l'app a accès à Internet. Sinon l'utilisateur ne verra pas que l'app est en mode dégradé
+    fun autoLogin(nom: String, mdp: String, logout: Boolean, internetState: Boolean) {
         if (nom != "login inconnu" && mdp != "mdp inconnu" && logout.not() && internetState!!) {
             Log.d("connexion auto", "nom : ${nom} + mdp : ${mdp}")
             buttonOK.performClick()

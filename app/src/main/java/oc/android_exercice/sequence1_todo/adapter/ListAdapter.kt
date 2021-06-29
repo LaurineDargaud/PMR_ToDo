@@ -36,11 +36,11 @@ class ListAdapter(
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        Log.d("ListAdapter", "onBindViewHolder position $position")
-        val currentItem = listes[position]
-        holder.itemView.apply {
-            val textViewItem: TextView = findViewById(R.id.textViewListName)
-            textViewItem.text = currentItem.titreListeToDo
+            Log.d("ListAdapter", "onBindViewHolder position $position")
+            val currentItem = listes[position]
+            holder.itemView.apply {
+                val textViewItem: TextView = findViewById(R.id.textViewListName)
+                textViewItem.text = currentItem.titreListeToDo
         }
     }
 
