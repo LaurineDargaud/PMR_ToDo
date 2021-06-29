@@ -84,7 +84,9 @@ class ShowListActivity : AppCompatActivity(),
                         toDoDescription.text.clear()
 
                         // ajouter item à la recycle view pour l'affichage
+                        items.add(addedItem)
                         itemAdapter.add(addedItem)
+
                         Log.d("ShowListActivity","addedItem = {$addedItem}")
                     } catch (e: Exception) {
                         Log.d("ShowListActivity", "Erreur à l'ajout d'item : ${e}")
