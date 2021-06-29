@@ -2,6 +2,7 @@ package oc.android_exercice.sequence1_todo.data
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import oc.android_exercice.sequence1_todo.data.model.ProfilListeToDo
 import oc.android_exercice.sequence1_todo.data.source.local.LocalDataSource
 import oc.android_exercice.sequence1_todo.data.source.remote.RemoteDataSource
@@ -11,11 +12,11 @@ class ProfileRepository (
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ){
-    suspend fun authenticate(username: String, password: String): String{
-        return try{
-            remoteDataSource.authentificationFromApi(username,password)
-        } catch (e:Exception){
-            getIdUser(username,password)
+    suspend fun authenticate(username: String, password: String, internetState : Boolean): String{
+        if (internetState){
+                return remoteDataSource.authentificationFromApi(username,password)
+        } else {
+                return getIdUser(username,password)
         }
     }
 

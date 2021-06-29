@@ -117,8 +117,8 @@ class ShowListActivity : AppCompatActivity(),
         }
     }
 
+    // Initilialisation du Recyclerview affichant la liste des items de la todo
     private fun setupRecyclerView() {
-        //Initilialisation du recyclerview affichant la liste des items de la todo
         var rvTodoList: RecyclerView = findViewById(R.id.rvTodoList)
         itemAdapter =
             ItemAdapter(this)
@@ -133,6 +133,7 @@ class ShowListActivity : AppCompatActivity(),
         list.isVisible = !show
     }
 
+    // Affichage et mise à jour des items du RecyclerView
     private fun loadAndDisplayItems() {
         activityScope.launch {
             showProgress(true)
@@ -149,7 +150,7 @@ class ShowListActivity : AppCompatActivity(),
         }
     }
 
-    // affiche le menu ActionBar si la méthode renvoie vrai
+    // affichage du menu ActionBar
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         // R.menu.menu dénote le fichier  res/menu/menu.xml
